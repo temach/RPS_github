@@ -12,11 +12,95 @@ def debug( func_to_wrap ):
     return print_arguments_wrapper
 
 
+def read_pickle_file( filepath ):
+    try:
+        with open( filepath, 'rb') as datafile:
+            return pickle.load( datafile )
+    except EOFError:
+        return {} # happens when run for the first time. Because the high_scores.txt file is completely empty.    EOFError = End Of File Error
+
+    except Exception as exc:
+        print("Got Error:  {0} {1}".format( type(exc), exc.args))
+        raise
+
+
+
+
+
 
 class FunctionsGroup( list ):
     def __call__(self, func_vars=None):
         for func in self:
             func( func_vars )
+
+
+
+
+class MakerBasic( object ):
+
+    def get_surfaces(self, path, rect=False):
+        img_types = ("_out.png", "_over.png", "_down.png")
+        all_imgs = ( pygame.image.load( path + extra ).convert()  for extra in img_types )
+
+        if rect: all_imgs = ( pygame.transform.smoothscale(surf, rect.size) for surf in all_imgs )
+
+        return all_imgs
+
+
+    def make_button(self, rect, func_to_call, img_name, func_vars=None, rescale=False):
+        img_reference = os.path.join( constants.IMAGES_FOLDER_PATH, img_name)
+
+        surf_list = (rescale and self.get_surfaces( img_reference, rect)) or self.get_surfaces( img_reference )
+        # To better understand how the above trick works visit "http://www.siafoo.net/article/52" or google "python and/or trick to select values inline"
+
+        b = Button( surf_list, rect, func_to_call, func_vars)
+        return b
+
+
+    def make_reader(self, text, pos, width,
+                            fontsize=15,
+                            height=None,
+                            font=None,
+                            bg=(100,100,100),
+                            fgcolor=(255,255,255),
+                            hlcolor=(255,10,150,100),
+                            split=False):
+        """ pos and width are necessary. """
+        if not type(text)==unicode:
+            text = unicode(text.expandtabs(4),'utf8')
+        t = Reader( text, pos, width, fontsize, height, font, bg, fgcolor, hlcolor, split)
+        return t
+
+
+
+    def make_form(self, pos, width, **kws):
+        """
+        Creates a form, but remember that a form's input can not be grabbed without a form confirmation button
+
+        """
+        f = Form( pos, width, kws.get("fontsize", 12),
+                                kws.get("height", 12),
+                                kws.get("font", 12),
+                                kws.get("bg", 12),
+                                kws.get("fgcolor", 12),
+                                kws.get("hlcolor", 12),
+                                kws.get("curscolor", 12),
+                                kws.get("maxlines", 0) )
+        return f
+
+
+
+    def make_form_prompter(self, some_form, rect, func_to_call, img_name="confirm", rescale=False):
+        surf_list = self.get_surfaces( img_reference, rect) if rescale else self.get_surfaces( img_reference )
+
+        fm = FormPrompter( surf_list, rect, func_to_call, {"user_input":""}, some_form )    # the "some_form" here referes to any Form that would be used to grab the user's input
+        return fm
+
+
+
+
+
+
 
 
 

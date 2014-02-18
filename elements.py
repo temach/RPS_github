@@ -4,6 +4,8 @@ import pygame
 from agk.vector2 import Vector2
 from pygame.locals import *
 import textwrap
+import resources
+
 
 class ElementBase( pygame.sprite.Sprite ):
     def receive_event(self, ev):
@@ -106,7 +108,7 @@ class Button( ElementBase ):
 
 
 
-class Reader(pygame.Rect,object):
+class Reader( ElementBase ):
 
     class ln(object):
         def __init__(self,string,nl,sp):
@@ -114,23 +116,34 @@ class Reader(pygame.Rect,object):
             self.nl = nl
             self.sp = sp
 
-    def __init__(self,text,pos,width,fontsize,height=None,font=None,bg=(250,250,250),fgcolor=(0,0,0),hlcolor=(180,180,200),split=True):
+    def __init__(self, text, pos, width, style):
+        # style is a dictionary of values
+
+
+        fontsize,height=None,font=None,bg=(250,250,250),fgcolor=(0,0,0),hlcolor=(180,180,200),split=True):
+
         self.id = id(self)
         self._original = text.expandtabs(4).split('\n')
+
         self.BG = bg
         self.FGCOLOR = fgcolor
+
         self._line = 0
         self._index = 0
+
+        self._font = style.get("font",  )
         if not font:
             self._fontname = pygame.font.match_font('mono',1)
             self._font = pygame.font.Font(self._fontname,fontsize)
         elif type(font) == str:
             self._fontname = font
-            self._font = pygame.font.Font(font,fontsize)
+            self._font = pygame.font.Font(font, fontsize)
+
         self._w,self._h = self._font.size(' ')
         self._fontsize = fontsize
         if not height: pygame.Rect.__init__(self,pos,(width,self._font.get_height()))
         else: pygame.Rect.__init__(self,pos,(width,height))
+
         self.split = split
         self._splitted = self.splittext()
         self._x,self._y = pos
@@ -157,8 +170,8 @@ class Reader(pygame.Rect,object):
         return self._hlc
     @HLCOLOR.setter
     def HLCOLOR(self,color):
-        self._hlsurface = pygame.Surface((self._w,self._h),pygame.SRCALPHA)
-        self._hlsurface.fill(color)
+        self._hlsurface = pygame.Surface( (self._w,self._h), pygame.SRCALPHA )
+        self._hlsurface.fill( color )
 
     @property
     def POS(self):
@@ -305,7 +318,7 @@ class Reader(pygame.Rect,object):
 
 
 
-class Form(pygame.Rect, object):
+class Form( ElementBase ):
 
     def __init__(self,pos,width,fontsize,height=None,font=None,bg=(250,250,250),fgcolor=(0,0,0),hlcolor=(180,180,200),curscolor=(0xff0000),maxlines=0):
         self.id = id(self)
@@ -544,16 +557,17 @@ class Form(pygame.Rect, object):
 
 
 
+
 class FormPrompter( Button ):
     def __init__(self, imgs_list, rect, func, func_vars, some_form):
-        super( FormPrompter, self).__init__(imgs_list, rect, func, func_vars)
+        super(FormPrompter, self).__init__(imgs_list, rect, func, func_vars)
 
         self.form = some_form
         self.form_active = False
 
 
     def receive_event(self, ev):
-        super( FormPrompter, self).receive_event( ev )
+        super(FormPrompter, self).receive_event( ev )
 
         if self.state=="mouseclick":
             self.func_vars["user_input"] = self.form.OUTPUT

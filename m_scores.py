@@ -23,6 +23,26 @@ def get_filled(surf, col):
 
 
 class MakerLocal(object):
+    def get_surfaces(self, path, rect=False):
+        img_types = ("_out.png", "_over.png", "_down.png")
+        all_imgs = ( pygame.image.load( path + extra ).convert()  for extra in img_types )
+
+        if rect:
+            all_imgs = ( pygame.transform.smoothscale(surf, rect.size) for surf in all_imgs )
+
+        return all_imgs
+
+
+    def make_button(self, rect, func_to_call, img_name, func_vars=None, rescale=False):
+        img_reference = os.path.join( constants.IMAGES_FOLDER_PATH, img_name)
+
+        surf_list = (rescale and self.get_surfaces( img_reference, rect)) or self.get_surfaces( img_reference )
+        # To better understand how the above trick works visit "http://www.siafoo.net/article/52" or google "python and/or trick to select values inline"
+
+        b = Button( surf_list, rect, func_to_call, func_vars)
+        return b
+
+
 
     def make_reader(self, text, pos, width,
                             fontsize=15,
@@ -37,22 +57,6 @@ class MakerLocal(object):
             text = unicode(text.expandtabs(4),'utf8')
         t = Reader( text, pos, width, fontsize, height, font, bg, fgcolor, hlcolor, split)
         return t
-
-
-    def make_button(self, rect, func_to_call, img_name, func_vars=None, rescale=False):
-        #img_folder_path = os.path.join("img", img_name)
-        some_surf = pygame.Surface((50,50))
-        out = get_filled( some_surf, (100,100,100) )
-        over = get_filled( some_surf, (100,200,100) )
-        down = get_filled( some_surf, (100,100,200) )
-
-        if rescale==True:
-            out = pygame.transform.smoothscale(out, rect.size)
-            over = pygame.transform.smoothscale(over, rect.size)
-            down = pygame.transform.smoothscale(down, rect.size)
-
-        b = Button( [out, over, down], rect, func_to_call, func_vars)
-        return b
 
 
 
@@ -75,36 +79,33 @@ class HighScore(object):
 
         # specific variables for this cluster
         self.reader = None
-        self.flags = {}
-        self.scores_file = "high_scores.txt"
 
-        n = open(self.scores_file, "rb")
-        try: self.flags["scores"] = pickle.load( n )
-        except EOFError: self.flags["scores"] = {}      # happens when run for the first time. Because the high_scores.txt file is completely empty.    EOFError = End Of File Error
-        n.close()
+        # PlayerName : { OpponentName:NumberOfWins,  OpponentName:NumberOfWins }
+        self.scores = util.read_pickle_file( constants.HIGH_SCORES_FILE )
+
+
 
 
 
     """ Modify default function behaviour """
     # What are some of the things that will happen (in terms of this class) when Someone calls "func_mein_menu"
     def func_menu(self, func_vars=None):
-        self.cp.deactivate( self.map.objects_scores )
-        self.cp.activate( self.map.objects_menu )
+        self.cp.unbind( self.map.objects_scores )
+
 
     # What are some of the things that will happen when someone calls "func_view_scores"
     def func_view_scores(self, func_vars=None):
-        self.cp.deactivate( self.map.objects_menu )
-
         text = """   Name _>   Opponent's Name : Number of wins"""
-        for p_name, o_info in self.flags["scores"].items():
-            text += "\n\n"
-            text += "\n" + "\t" + p_name + " has beaten"
+
+        for p_name, o_info in self.scores.items():
+            text += "\n\n\t {0} has beaten".format( p_name )
             for o_name, o_wins in o_info.items():
-                text += "\n" + " "*10 + o_name + " : " + str(o_wins) + "  times"
+                text += "\n\t\t\t {0} : {1}   times".format( o_name, str(o_wins))
+
 
         self.reader.update_text( text )     # this is using the handle to the reader object created by the self.setup() function
 
-        self.cp.activate( self.map.objects_scores )
+        self.cp.bind( self.map.objects_scores )
     """ End modify section """
 
 
@@ -115,7 +116,6 @@ class HighScore(object):
         self.ops.view_scores.append( self.func_view_scores )
         self.ops.main_menu.append( self.func_menu )
 
-
         # things that exist within the space
         rect = pygame.Rect( (40,460), (100,90))
         img = "menu"
@@ -124,8 +124,8 @@ class HighScore(object):
 
         text = ""
         r = self.maker.make_reader( text, (94, 58), 615, fontsize=20, height=383)
-        self.reader = r     # simply a handle to the reader (shortcut)
         self.map.objects_scores["reader"] = r
+        self.reader = r     # simply a local handle to the reader (shortcut)
 
 
         rect = pygame.Rect( (80,180), (160,60))
