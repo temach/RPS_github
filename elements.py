@@ -108,7 +108,25 @@ class Button( ElementBase ):
 
 
 
-class Reader( ElementBase ):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Reader( ElementBase, pygame.Rect ):
 
     class ln(object):
         def __init__(self,string,nl,sp):
@@ -117,40 +135,52 @@ class Reader( ElementBase ):
             self.sp = sp
 
     def __init__(self, text, pos, width, style):
-        # style is a dictionary of values
+        #assert all( [ style[key] for key in style.keys() if key!="split" ] )    # check that all atributes are True. Ignore "split" option, because whether True or False it is valid.
+        #assert len( style )==7
 
+        # "style" is a dictionary of values
+        """
+            "fontsize": 12,
+            "font": "mono",
+            "height": None,
+            "bgcolor": (250,250,250,0),
+            "fgcolor": (0,0,0,0),         # text color
+            "hlcolor": (180,180,200,0),         # highlighted text color
+            "split": True,                 # wrap lines automatically
+        """
 
-        fontsize,height=None,font=None,bg=(250,250,250),fgcolor=(0,0,0),hlcolor=(180,180,200),split=True):
+        #fontsize,height=None,font=None,bg=(250,250,250),fgcolor=(0,0,0),hlcolor=(180,180,200),split=True):
+
+        # Throughout the code these three things (below) are encountered why use
+        # a different one each time?
 
         self.id = id(self)
         self._original = text.expandtabs(4).split('\n')
 
-        self.BG = bg
-        self.FGCOLOR = fgcolor
+        self.BG = style.get("bgcolor", False)
+        self.FGCOLOR = style.get("fgcolor", False)
 
         self._line = 0
         self._index = 0
 
-        self._font = style.get("font",  )
-        if not font:
-            self._fontname = pygame.font.match_font('mono',1)
-            self._font = pygame.font.Font(self._fontname,fontsize)
-        elif type(font) == str:
-            self._fontname = font
-            self._font = pygame.font.Font(font, fontsize)
+        self._fontsize = style.get("fontsize", False)
+        self._fontname = pygame.font.match_font( style.get("font", "mono"), bold=True )
+        self._font = pygame.font.Font(self._fontname, self._fontsize)
+        self._w, self._h = self._font.size(' ')
 
-        self._w,self._h = self._font.size(' ')
-        self._fontsize = fontsize
-        if not height: pygame.Rect.__init__(self,pos,(width,self._font.get_height()))
-        else: pygame.Rect.__init__(self,pos,(width,height))
+        _rect_h = style.get("height", False) or self._font.get_height()
+        pygame.Rect.__init__(self, pos, (width, _rect_h) )
 
-        self.split = split
+        ElementBase.__init__(self)
+
+        self.split = style.get("split", None)
         self._splitted = self.splittext()
         self._x,self._y = pos
         self._src = pygame.display.get_surface()
         self._select = self._line,self._index
-        self._hlc = hlcolor
-        self.HLCOLOR = hlcolor
+
+        self.HLCOLOR = style.get( "hlcolor", False)
+        self._hlc = style.get( "hlcolor", False)
 
     def splittext(self):
         nc = self.width / self._w
@@ -248,6 +278,7 @@ class Reader( ElementBase ):
     def render(self, screen):
         self.screen()
         pygame.display.update(self)
+        return self
 
     def update_text(self, new_text):    # artem
         self._original = new_text.expandtabs(4).split('\n')

@@ -9,8 +9,8 @@ pygame.init()
 
 
 from elements import Button, Reader
-
-
+import util
+from util import MakerBasic
 
 
 
@@ -22,29 +22,9 @@ def get_filled(surf, col):
 
 
 
-class MakerLocal(object):
-    def get_surfaces(self, path, rect=False):
-        img_types = ("_out.png", "_over.png", "_down.png")
-        all_imgs = ( pygame.image.load( path + extra ).convert()  for extra in img_types )
+class MakerLocal( MakerBasic ):
 
-        if rect:
-            all_imgs = ( pygame.transform.smoothscale(surf, rect.size) for surf in all_imgs )
-
-        return all_imgs
-
-
-    def make_button(self, rect, func_to_call, img_name, func_vars=None, rescale=False):
-        img_reference = os.path.join( constants.IMAGES_FOLDER_PATH, img_name)
-
-        surf_list = (rescale and self.get_surfaces( img_reference, rect)) or self.get_surfaces( img_reference )
-        # To better understand how the above trick works visit "http://www.siafoo.net/article/52" or google "python and/or trick to select values inline"
-
-        b = Button( surf_list, rect, func_to_call, func_vars)
-        return b
-
-
-
-    def make_reader(self, text, pos, width,
+    def make_reader1(self, text, pos, width,
                             fontsize=15,
                             height=None,
                             font=None,
@@ -81,20 +61,25 @@ class HighScore(object):
         self.reader = None
 
         # PlayerName : { OpponentName:NumberOfWins,  OpponentName:NumberOfWins }
-        self.scores = util.read_pickle_file( constants.HIGH_SCORES_FILE )
+        self.scores = util.read_pickle_file( "high_scores.txt" )
 
 
+        self.objects_scores = {}
+        self.objects_menu = {}
 
 
 
     """ Modify default function behaviour """
     # What are some of the things that will happen (in terms of this class) when Someone calls "func_mein_menu"
     def func_menu(self, func_vars=None):
-        self.cp.unbind( self.map.objects_scores )
+        self.cp.unbind( self.objects_scores )
 
 
     # What are some of the things that will happen when someone calls "func_view_scores"
     def func_view_scores(self, func_vars=None):
+        print
+        print "unbinding objects_menu, ", self.objects_menu
+        self.cp.unbind(self.objects_menu)
         text = """   Name _>   Opponent's Name : Number of wins"""
 
         for p_name, o_info in self.scores.items():
@@ -104,8 +89,11 @@ class HighScore(object):
 
 
         self.reader.update_text( text )     # this is using the handle to the reader object created by the self.setup() function
-
-        self.cp.bind( self.map.objects_scores )
+        #print
+        print "just before bind in func_view_score"
+        #print self.objects_scores
+        self.cp.bind( self.objects_scores )
+        print "ended bind in func_view_score"
     """ End modify section """
 
 
@@ -113,23 +101,101 @@ class HighScore(object):
 
     """ Modify default object existence """
     def setup(self):
-        self.ops.view_scores.append( self.func_view_scores )
-        self.ops.main_menu.append( self.func_menu )
+        self.ops.func_view_scores.append( self.func_view_scores )
+        self.ops.func_main_menu.append( self.func_menu )
 
         # things that exist within the space
         rect = pygame.Rect( (40,460), (100,90))
         img = "menu"
         b = self.maker.make_button( rect, self.ops.func_main_menu, img, func_vars=None, rescale=True)
-        self.map.objects_scores["func_main_menu"] = b
+        self.objects_scores["func_main_menu"] = b
+
 
         text = ""
-        r = self.maker.make_reader( text, (94, 58), 615, fontsize=20, height=383)
-        self.map.objects_scores["reader"] = r
+        r = self.maker.make_reader( text, (94, 58), 615, "normallllllllllllllll")
+        self.objects_scores["reader"] = r
         self.reader = r     # simply a local handle to the reader (shortcut)
 
 
         rect = pygame.Rect( (80,180), (160,60))
         img = "scores"
         b = self.maker.make_button(rect, self.ops.func_view_scores, img, func_vars={"view_from":"menu"}, rescale=True)
-        self.map.objects_menu["func_view_scores"] = b
+        self.objects_menu["func_view_scores"] = b
 
+
+
+
+
+if __name__=="__main__":
+
+    import pygame
+    import pygame.locals as PL
+    import time
+    from sys import exit
+
+    from util import debug      # Use as decorator. So put "@debug" just before function definition.
+    from util import ActiveGroup
+    from util import FunctionsGroup
+
+
+    class Operator(object):     # The operator describes what functions there are, in your files you describe how they work.
+        def __init__(self):
+            self.func_main_menu = FunctionsGroup()
+            self.func_view_scores = FunctionsGroup()
+
+
+    class Mapper(object):      # Describes what options you have. In your files you describe how these dictionaries look, the Mapper describes what dictionaries there are.
+        def __init__(self):
+            self.objects_menu = {}
+            self.objects_scores = {}
+
+
+    pygame.init()
+
+    screen = pygame.display.set_mode( (800,600) )
+
+
+    operators = Operator()
+    mapper = Mapper()
+    active = ActiveGroup()
+
+    clock = pygame.time.Clock()
+
+
+    # Here enter the name of the module
+    module = HighScore( active, operators, mapper )
+    module.setup()
+
+    active.bind( module.objects_menu )
+
+
+    background = pygame.Surface( screen.get_size() )
+    background.fill( (240,240,240) )
+
+    screen.blit( background, (0,0))
+    pygame.display.flip()
+
+
+    legal_events = (PL.KEYDOWN, PL.KEYUP, PL.MOUSEMOTION, PL.MOUSEBUTTONUP, PL.MOUSEBUTTONDOWN)
+    keyboard_events =(PL.KEYDOWN, PL.KEYUP)
+
+
+    while True:
+        #screen.blit( background, (0,0))
+        event = pygame.event.wait()
+
+        if event.type==PL.QUIT or ( (event.type in keyboard_events) and (event.key == PL.K_q or event.key==PL.K_ESCAPE) ):
+            exit()
+
+        elif event.type in legal_events:
+            active.manage_event( event )
+
+        active.clear(screen, background)
+
+        dirty_rects = active.manage_render( screen )
+        pygame.display.update(dirty_rects)
+
+
+        active.manage_run()
+
+        clock.tick(20)

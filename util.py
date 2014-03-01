@@ -1,5 +1,7 @@
 import pygame
-
+import pickle
+import os
+from elements import Button, Reader
 
 def debug( func_to_wrap ):
 
@@ -48,44 +50,46 @@ class MakerBasic( object ):
 
 
     def make_button(self, rect, func_to_call, img_name, func_vars=None, rescale=False):
-        img_reference = os.path.join( constants.IMAGES_FOLDER_PATH, img_name)
+        img_reference = os.path.join( "img", img_name)
 
         surf_list = (rescale and self.get_surfaces( img_reference, rect)) or self.get_surfaces( img_reference )
-        # To better understand how the above trick works visit "http://www.siafoo.net/article/52" or google "python and/or trick to select values inline"
+        # Above trick: google for "python and/or trick to select values inline"
 
         b = Button( surf_list, rect, func_to_call, func_vars)
         return b
 
 
-    def make_reader(self, text, pos, width,
-                            fontsize=15,
-                            height=None,
-                            font=None,
-                            bg=(100,100,100),
-                            fgcolor=(255,255,255),
-                            hlcolor=(255,10,150,100),
-                            split=False):
-        """ pos and width are necessary. """
+    def make_reader(self, text, pos, width, style_name):
+        """ text, pos and width are necessary. """
         if not type(text)==unicode:
-            text = unicode(text.expandtabs(4),'utf8')
-        t = Reader( text, pos, width, fontsize, height, font, bg, fgcolor, hlcolor, split)
+            text = unicode(text.expandtabs(4), 'utf8')
+
+        style_reader1 = {
+            "fontsize": 17,
+            "font": "mono",
+            "height": 380,
+            "bgcolor": (150,150,150,0),
+            "fgcolor": (0,0,0,0),           # text color
+            "hlcolor": (180,180,200,0),      # highlighted text color
+            "split": True,                  # wrap lines automatically
+        }
+
+        t = Reader( text, pos, width, style_reader1)
         return t
 
 
 
-    def make_form(self, pos, width, **kws):
-        """
-        Creates a form, but remember that a form's input can not be grabbed without a form confirmation button
-
-        """
-        f = Form( pos, width, kws.get("fontsize", 12),
-                                kws.get("height", 12),
-                                kws.get("font", 12),
-                                kws.get("bg", 12),
-                                kws.get("fgcolor", 12),
-                                kws.get("hlcolor", 12),
-                                kws.get("curscolor", 12),
-                                kws.get("maxlines", 0) )
+    def make_form(self, pos, width,
+                        fontsize=12,
+                        height=None,
+                        font=None,
+                        bg=(100,100,100),
+                        fgcolor=(250,250,250),
+                        hlcolor=(250,190,150,50),
+                        curscolor=(190,0,10),
+                        maxlines=0):
+        """ Creates a form, but remember that a form's input can not be grabbed without a form confirmation button"""
+        f = Form( pos, width, fontsize, height, font, bg, fgcolor, hlcolor, curscolor, maxlines)
         return f
 
 
@@ -99,6 +103,25 @@ class MakerBasic( object ):
 
 
 
+"""
+
+    def make_form(self, pos, width, **kws):
+        #Creates a form, but remember that a form's input can not be grabbed without a form confirmation button
+
+        f = Form( pos, width, kws.get("fontsize", 12),
+                                kws.get("height", 12),
+                                kws.get("font", None),
+                                kws.get("bg", None),
+                                kws.get("fgcolor", 12),
+                                kws.get("hlcolor", 12),
+                                kws.get("curscolor", 12),
+                                kws.get("maxlines", 0) )
+        return f
+
+
+
+"""
+
 
 
 
@@ -106,35 +129,48 @@ class MakerBasic( object ):
 
 class ActiveGroup( pygame.sprite.RenderUpdates ):
 
+
     def add(self, *sprites):
         """add sprite to group
            This is an inside method. Call .bind() to bind/add to group
            Add a sprite or sequence of sprites to a group."""
+        print "trying to add these sprites ", sprites
         for sprite in sprites:
+            print "hello, its a sprite"
+            print sprite
+            print
             if not self.has_internal(sprite):
                 self.add_internal(sprite)
                 sprite.add_internal(self)
+        print
+        print "finished trying to add"
 
     def remove(self, *sprites):
         """remove sprite from group
            This is an inside method. Call .unbind() to unbind/remove to group
            Remove a sprite or sequence of sprites from a group."""
+
         for sprite in sprites:
+            print "received sprite to remove"
             if self.has_internal(sprite):
                 self.remove_internal(sprite)
                 sprite.remove_internal(self)
 
 
 
-
+    '''
     def bind(self, stuff=None, *args, **kwargs):
         """add(sprite, list, or group, ...)
            add sprite to group
            Add a sprite or sequence of sprites to a group."""
+        print "trying to bind", args, kwargs
 
         try:            # presume that it is a dictionary
             if args: print "The first argument is an iterable, hence all other args except for keywords are ignored. Consider adding them to the first iterable."
-            self.add( *stuff.values() )
+            print "binding this", stuff
+            x = stuff.values()
+            self.add( *( stuff.values() ) )
+
         except AttributeError:       # its not a dict, but its most probably an iterable.
             try:
                 if args: print "The first argument is an iterable, hence all other args except for keywords are ignored. Consider adding them to the first iterable."
@@ -142,11 +178,41 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
             except TypeError:           # ok, so "stuff" is not an iterable, its just one object, then any args passed after can also be only objects
                self.add( stuff, *args )
 
+        finally:
+            print "finished binding"
+    '''
 
-    def unbind(self, stuff=None, *args, **kwargs):
+
+    def bind(self, stuff=None, *args, **kwargs):
         """add(sprite, list, or group, ...)
            add sprite to group
            Add a sprite or sequence of sprites to a group."""
+
+        try:           # presume that it is a dictionary
+            self.add(  *getattr(stuff, "values", None)()  )
+        except TypeError:       # its not a dict, then it must be an iterable.
+            self.add( *stuff )
+
+
+
+    def unbind(self, stuff=None, *args, **kwargs):
+        """remove(sprite, list, or group, ...)
+           remove sprite from group
+           remove a sprite or sequence of sprites from a group."""
+
+        try:           # presume that it is a dictionary
+            self.remove(  *getattr(stuff, "values", None)()  )
+        except TypeError:       # its not a dict, then it must be an iterable.
+            self.remove( *stuff )
+
+
+
+
+    '''
+    def unbind(self, stuff=None, *args, **kwargs):
+        """remove(sprite, list, or group, ...)
+           remove sprite from group
+           remove a sprite or sequence of sprites from a group."""
 
         try:            # presume that it is a dictionary
             if args: print "The first argument is an iterable, hence all other args except for keywords are ignored. Consider adding them to the first iterable."
@@ -157,7 +223,7 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
                 self.remove( *stuff )
             except TypeError:           # ok, so "stuff" is not an iterable, its just one object, then any args passed after can also be only objects
                self.remove( stuff, *args )
-
+    '''
 
     def manage_event(self, *args):
         """receive_event(*args)
@@ -172,7 +238,9 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
             If you want to pass something use receive_event( something )
             call run for all member sprites, so they can act on info received.
             this is the second step of the update process."""
+        print len(self.sprites())
         for s in self.sprites(): s.run(*args)
+
 
 
     def manage_render(self, surface):
