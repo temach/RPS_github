@@ -1,40 +1,6 @@
 import pygame
-import pickle
 import os
 from elements import Button, Reader
-
-def debug( func_to_wrap ):
-
-    def print_arguments_wrapper( *args ):       # this wrapped prints the arguments to the function
-        print
-        print
-        print "debug: Function __{0}__   got args:    {1} ".format(func_to_wrap.__name__, args)
-        func_to_wrap( *args )
-
-    return print_arguments_wrapper
-
-
-def read_pickle_file( filepath ):
-    try:
-        with open( filepath, 'rb') as datafile:
-            return pickle.load( datafile )
-    except EOFError:
-        return {} # happens when run for the first time. Because the high_scores.txt file is completely empty.    EOFError = End Of File Error
-
-    except Exception as exc:
-        print("Got Error:  {0} {1}".format( type(exc), exc.args))
-        raise
-
-
-
-
-
-
-class FunctionsGroup( list ):
-    def __call__(self, func_vars=None):
-        for func in self:
-            func( func_vars )
-
 
 
 
@@ -103,24 +69,7 @@ class MakerBasic( object ):
 
 
 
-"""
 
-    def make_form(self, pos, width, **kws):
-        #Creates a form, but remember that a form's input can not be grabbed without a form confirmation button
-
-        f = Form( pos, width, kws.get("fontsize", 12),
-                                kws.get("height", 12),
-                                kws.get("font", None),
-                                kws.get("bg", None),
-                                kws.get("fgcolor", 12),
-                                kws.get("hlcolor", 12),
-                                kws.get("curscolor", 12),
-                                kws.get("maxlines", 0) )
-        return f
-
-
-
-"""
 
 
 
@@ -129,77 +78,39 @@ class MakerBasic( object ):
 
 class ActiveGroup( pygame.sprite.RenderUpdates ):
 
-
     def add(self, *sprites):
         """add sprite to group
            This is an inside method. Call .bind() to bind/add to group
            Add a sprite or sequence of sprites to a group."""
-        print "trying to add these sprites ", sprites
         for sprite in sprites:
-            print "hello, its a sprite"
-            print sprite
-            print
             if not self.has_internal(sprite):
                 self.add_internal(sprite)
                 sprite.add_internal(self)
-        print
-        print "finished trying to add"
 
     def remove(self, *sprites):
         """remove sprite from group
            This is an inside method. Call .unbind() to unbind/remove to group
            Remove a sprite or sequence of sprites from a group."""
-
         for sprite in sprites:
-            print "received sprite to remove"
             if self.has_internal(sprite):
                 self.remove_internal(sprite)
                 sprite.remove_internal(self)
 
 
 
-    '''
     def bind(self, stuff=None, *args, **kwargs):
         """add(sprite, list, or group, ...)
            add sprite to group
            Add a sprite or sequence of sprites to a group."""
-        print "trying to bind", args, kwargs
-
-        try:            # presume that it is a dictionary
-            if args: print "The first argument is an iterable, hence all other args except for keywords are ignored. Consider adding them to the first iterable."
-            print "binding this", stuff
-            x = stuff.values()
-            self.add( *( stuff.values() ) )
-
-        except AttributeError:       # its not a dict, but its most probably an iterable.
-            try:
-                if args: print "The first argument is an iterable, hence all other args except for keywords are ignored. Consider adding them to the first iterable."
-                self.add( *stuff )
-            except TypeError:           # ok, so "stuff" is not an iterable, its just one object, then any args passed after can also be only objects
-               self.add( stuff, *args )
-
-        finally:
-            print "finished binding"
-    '''
-
-
-    def bind(self, stuff=None, *args, **kwargs):
-        """add(sprite, list, or group, ...)
-           add sprite to group
-           Add a sprite or sequence of sprites to a group."""
-
         try:           # presume that it is a dictionary
             self.add(  *getattr(stuff, "values", None)()  )
         except TypeError:       # its not a dict, then it must be an iterable.
             self.add( *stuff )
 
-
-
     def unbind(self, stuff=None, *args, **kwargs):
         """remove(sprite, list, or group, ...)
            remove sprite from group
            remove a sprite or sequence of sprites from a group."""
-
         try:           # presume that it is a dictionary
             self.remove(  *getattr(stuff, "values", None)()  )
         except TypeError:       # its not a dict, then it must be an iterable.
@@ -208,45 +119,22 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
 
 
 
-    '''
-    def unbind(self, stuff=None, *args, **kwargs):
-        """remove(sprite, list, or group, ...)
-           remove sprite from group
-           remove a sprite or sequence of sprites from a group."""
-
-        try:            # presume that it is a dictionary
-            if args: print "The first argument is an iterable, hence all other args except for keywords are ignored. Consider adding them to the first iterable."
-            self.remove( *stuff.values() )
-        except AttributeError:       # its not a dict, but its most probably an iterable.
-            try:
-                if args: print "The first argument is an iterable, hence all other args except for keywords are ignored. Consider adding them to the first iterable."
-                self.remove( *stuff )
-            except TypeError:           # ok, so "stuff" is not an iterable, its just one object, then any args passed after can also be only objects
-               self.remove( stuff, *args )
-    '''
-
     def manage_event(self, *args):
-        """receive_event(*args)
-           spread information for all member sprites.
+        """spread information for all member sprites.
            this is the first step of the update process."""
         for s in self.sprites(): s.receive_event(*args)
 
-
     def manage_run(self, *args):
-        """run(*args)
-            the *args should normally be empty.
+        """the *args should normally be empty.
             If you want to pass something use receive_event( something )
             call run for all member sprites, so they can act on info received.
             this is the second step of the update process."""
-        print len(self.sprites())
+        #print len(self.sprites())
         for s in self.sprites(): s.run(*args)
 
-
-
     def manage_render(self, surface):
-        """
-        Calls sprite.render( surface ) on all sprites in Group.
-        sprite.render( surface ) is supposed to return a pygame.Rect to update.
+        """Calls sprite.render( surface ) on all sprites in Group.
+            sprite.render( surface ) is supposed to return a pygame.Rect to update.
         """
         spritedict = self.spritedict
         surface_blit = surface.blit
@@ -267,3 +155,38 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
                     dirty_append(rec)
             spritedict[spr] = newrect
         return dirty
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+
+    def make_form(self, pos, width, **kws):
+        #Creates a form, but remember that a form's input can not be grabbed without a form confirmation button
+
+        f = Form( pos, width, kws.get("fontsize", 12),
+                                kws.get("height", 12),
+                                kws.get("font", None),
+                                kws.get("bg", None),
+                                kws.get("fgcolor", 12),
+                                kws.get("hlcolor", 12),
+                                kws.get("curscolor", 12),
+                                kws.get("maxlines", 0) )
+        return f
+
+
+
+"""

@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-
-
-
 """
 Resolve Clash of Titans
 """
@@ -16,18 +13,21 @@ import time
 from sys import exit
 
 
-# Start utilities imports (my)
-import constants        # Later this should combine, game constants AND pygame.locals constants
+#start my util imports
+import constants            # Later this should combine, game constants AND pygame.locals constants
 import resources
 
-from util import debug      # Use as decorator. So put "@debug" just before function definition.
-from util import ActiveGroup, FunctionsGroup
-# End my utilities imports
+from util import ActiveGroup
 
-# Start my modules imports
-from m_mainmenu import MainMenuModule
-from m_splash
-from m_scores
+from small_util import debug              # Use as decorator. So put "@debug" just before function definition.
+from small_util import FunctionsGroup
+#end
+
+
+#start my modules
+import m_mainmenu
+import m_splash
+import m_scores
 
 
 class Operator(object):     # The operator describes what functions there are, in your files you describe how they work.
@@ -36,19 +36,20 @@ class Operator(object):     # The operator describes what functions there are, i
         self.func_game = FunctionsGroup()
         self.func_view_scores = FunctionsGroup()
         self.func_credits = FunctionsGroup()
-
+        self.func_splash_screen = FunctionsGroup()
 
 class Mapper(object):      # Describes what options you have. In your files you describe how these dictionaries look, the Mapper describes what dictionaries there are.
     def __init__(self):
         self.objects_menu = {}
-
+        self.objects_splash_screen = {}     # the first thing to be bind'ed
+        self.objects_scores = {}
 
 
 
 pygame.init()
 
 
-"Setup"
+#setup
 screen = pygame.display.set_mode( (800,600) )
 
 # icon = pygame.transform.scale( resources.get_image("icon"), (32, 32))
@@ -60,7 +61,7 @@ background.fill( (240,240,240) )
 
 screen.blit( background, (0,0))
 pygame.display.flip()
-"End"
+#end
 
 
 
@@ -72,11 +73,16 @@ active = ActiveGroup()
 
 
 # Here we enter the names of the modules
-module = MainMenuModule( active, operators, mapper )
-module.setup()
+module1 = m_mainmenu.MainMenuModule( active, operators, mapper )
+module1.setup()
 
+module2 = m_splash.SplashModule( active, operators, mapper )
+module2.setup()
 
-active.bind( mapper.objects_menu )
+module3 = m_scores.HighScore( active, operators, mapper )
+module3.setup()
+
+active.bind( mapper.objects_splash_screen )
 
 
 

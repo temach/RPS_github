@@ -11,7 +11,7 @@ class ElementBase( pygame.sprite.Sprite ):
     def receive_event(self, ev):
         return
     def render(self, screen):
-        return
+        return pygame.Rect()
     def run(self):
         return
 
