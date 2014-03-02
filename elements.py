@@ -11,7 +11,7 @@ class ElementBase( pygame.sprite.Sprite ):
     def receive_event(self, ev):
         return
     def render(self, screen):
-        return pygame.Rect()
+        return pygame.Rect(0,0,0,0)
     def run(self):
         return
 
@@ -19,6 +19,7 @@ class ElementBase( pygame.sprite.Sprite ):
 
 class Text( ElementBase ):
     def __init__( self, rect, text, color, font_obj ):
+        ElementBase.__init__(self)
         self.id = id( self )
 
         self.rect = rect
@@ -58,7 +59,7 @@ class Text( ElementBase ):
 class Button( ElementBase ):
 
     def __init__( self, imgs_list, rect, func, func_vars=None):
-        pygame.sprite.Sprite.__init__( self )
+        ElementBase.__init__( self )
 
         self.id = id( self )
         self.state = "mouseout"   # mouseout, mouseover, mouseclick
@@ -349,29 +350,33 @@ class Reader( ElementBase, pygame.Rect ):
 
 
 
-class Form( ElementBase ):
+class Form(  ElementBase, pygame.Rect ):
 
-    def __init__(self,pos,width,fontsize,height=None,font=None,bg=(250,250,250),fgcolor=(0,0,0),hlcolor=(180,180,200),curscolor=(0xff0000),maxlines=0):
+
+    def __init__(self, pos, width, style):
         self.id = id(self)
-        if not font: self.FONT = pygame.font.Font(pygame.font.match_font('mono',1),fontsize)
-        elif type(font) == str: self.FONT = pygame.font.Font(font,fontsize)
-        else: self.FONT = fonts
-        self.BG = bg
-        self.FGCOLOR = fgcolor
-        self.HLCOLOR = hlcolor
-        self.CURSCOLOR = curscolor
+
+        self.FONT = pygame.font.Font( pygame.font.match_font('mono', 1), style.get("fontsize", None) )
+        self.BG = style.get("bgcolor", None)
+        self.FGCOLOR = style.get("fgcolor", None)
+        self.HLCOLOR = style.get("hlcolor", None)
+        self.CURSCOLOR = style.get("curscolor", None)
         self._line = 0
         self._index = 0
-        self.MAXLINES = maxlines
-        self._splitted = ['']
-        if not height: pygame.Rect.__init__(self,pos,(width,self.FONT.get_height()))
-        else: pygame.Rect.__init__(self,pos,(width,height))
+        self.MAXLINES = style.get("maxlines", None)
+        self._splitted = [""]
+
+        _rect_h = style.get("height", False) or self.FONT.get_height()
+        pygame.Rect.__init__(self, pos, (width, _rect_h) )
+        ElementBase.__init__(self)
+
         self._x,self._y = pos
         self._src = pygame.display.get_surface()
         self._select = self._line,self._index
-        self.TAB = 4
+        self.TAB = 4            # TODO: make it class defined, (here it is instance defined)
         self._adjust()
         self._cursor = True
+
 
     @property
     def CURSOR(self):
@@ -454,6 +459,7 @@ class Form( ElementBase ):
     def render(self, screen):
         self.screen()
         pygame.display.update(self)
+        return self
 
     def receive_event(self,ev):
 

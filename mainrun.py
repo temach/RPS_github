@@ -28,6 +28,7 @@ from small_util import FunctionsGroup
 import m_mainmenu
 import m_splash
 import m_scores
+import m_pickname
 
 
 class Operator(object):     # The operator describes what functions there are, in your files you describe how they work.
@@ -38,11 +39,21 @@ class Operator(object):     # The operator describes what functions there are, i
         self.func_credits = FunctionsGroup()
         self.func_splash_screen = FunctionsGroup()
 
+        #self.func_submit_name = FunctionsGroup()
+        #self.func_pick_name = FunctionsGroup()     Suggestion: replace self.func_game with this
+
+        #self.func_submit_weapon = FunctionsGroup()
+        self.func_pick_weapon = FunctionsGroup()
+
+
+
+
 class Mapper(object):      # Describes what options you have. In your files you describe how these dictionaries look, the Mapper describes what dictionaries there are.
     def __init__(self):
         self.objects_menu = {}
         self.objects_splash_screen = {}     # the first thing to be bind'ed
         self.objects_scores = {}
+        self.objects_pick_name = {}
 
 
 
@@ -52,9 +63,9 @@ pygame.init()
 #setup
 screen = pygame.display.set_mode( (800,600) )
 
-# icon = pygame.transform.scale( resources.get_image("icon"), (32, 32))
+#icon = pygame.transform.scale( resources.get_image("icon"), (32, 32))
 #pygame.display.set_icon(icon)
-#pygame.display.set_caption('Pygame Aliens')
+pygame.display.set_caption('Rock : Paper : Scissors')
 
 background = pygame.Surface( screen.get_size() )
 background.fill( (240,240,240) )
@@ -82,10 +93,13 @@ module2.setup()
 module3 = m_scores.HighScore( active, operators, mapper )
 module3.setup()
 
-active.bind( mapper.objects_splash_screen )
+module4 = m_pickname.PickName( active, operators, mapper )
+module4.setup()
 
 
 
+#active.bind( mapper.objects_menu )
+operators.func_game()
 
 
 legal_events = (PL.KEYDOWN, PL.KEYUP, PL.MOUSEMOTION, PL.MOUSEBUTTONUP, PL.MOUSEBUTTONDOWN)
@@ -93,13 +107,14 @@ keyboard_events =(PL.KEYDOWN, PL.KEYUP)
 
 
 while True:
-    event = pygame.event.wait()
+    event_que = pygame.event.get()
 
-    if event.type==PL.QUIT or ( (event.type in keyboard_events) and (event.key == PL.K_q or event.key==PL.K_ESCAPE) ):
-        exit()
+    for event in event_que:
+        if event.type==PL.QUIT or ( (event.type in keyboard_events) and (event.key == PL.K_q or event.key==PL.K_ESCAPE) ):
+            exit()
 
-    elif event.type in legal_events:
-        active.manage_event( event )
+        elif event.type in legal_events:
+            active.manage_event( event )
 
     active.clear(screen, background)
 
@@ -108,7 +123,7 @@ while True:
 
     active.manage_run()
 
-    clock.tick(20)
+    clock.tick(40)
 
 
 

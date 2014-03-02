@@ -1,36 +1,25 @@
 #! /usr/bin/env python-32
 # -*- coding: utf-8 -*-
 
-import os.path
 import pygame
-from pygame.locals import *
-pygame.init()
-
-import constants
-import resources
-
+import pygame.locals as PL
 
 from elements import Button
-from util import MakerBasic
+import util
 
-
-class MakerLocal(MakerBasic):
+class MakerLocal( util.MakerBasic ):
     pass
 
 
 
 
-
-
-
-class MainMenuModule(object):
+class MainMenuModule( util.ModuleBasic ):
     def __init__(self, active, operators, mapper):
         self.active = active
         self.ops = operators
         self.map = mapper
 
         self.maker = MakerLocal()
-
 
 
 

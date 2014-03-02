@@ -1,17 +1,14 @@
 #! /usr/bin/env python-32
 # -*- coding: utf-8 -*-
 
-import time
+import os.path
 import pygame
 import pygame.locals as PL
-pygame.init()
 
-from util import MakerBasic
+import util
 from elements import ElementBase
-import constants
-import resources
 
-import os
+
 
 
 
@@ -20,7 +17,7 @@ class Splash( ElementBase ):
         ElementBase.__init__(self)
 
         self.id = id(self)
-        self.rect = pygame.Rect(0,0,0,0)
+        self.rect = pygame.Rect( 0,0,0,0 )
         self.func = func_to_call
         self.func_vars = func_vars
         self.has_run = False
@@ -45,7 +42,7 @@ class Splash( ElementBase ):
 
 
 
-class MakerLocal(MakerBasic):
+class MakerLocal( util.MakerBasic ):
 
     def make_splash(self, func_to_call, func_vars):
         sp = Splash( func_to_call, func_vars )
@@ -56,7 +53,8 @@ class MakerLocal(MakerBasic):
 
 
 
-class SplashModule(object):
+class SplashModule( util.ModuleBasic ):
+
     def __init__(self, active, operators, mapper):
         self.active = active
         self.ops = operators

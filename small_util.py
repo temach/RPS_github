@@ -16,12 +16,7 @@ def read_pickle_file( filepath ):
         with open( filepath, 'rb') as datafile:
             return pickle.load( datafile )
     except EOFError:
-        return {} # happens when run for the first time. Because the high_scores.txt file is completely empty.    EOFError = End Of File Error
-
-    except Exception as exc:
-        print("Got Error:  {0} {1}".format( type(exc), exc.args))
-        raise
-
+        return None # happens if high_scores.txt file is completely empty. (When run for the first time)   EOFError = End Of File Error
 
 
 

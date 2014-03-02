@@ -3,9 +3,7 @@
 
 import pickle
 import pygame
-from pygame.locals import *
-pygame.init()
-
+import pygame.locals as PL
 
 
 from elements import Button, Reader
@@ -14,41 +12,12 @@ import small_util
 
 
 
-
-def get_filled(surf, col):
-    s = surf.copy()
-    s.fill( col )
-    return s
-
-
-
 class MakerLocal( util.MakerBasic ):
-
-    def make_reader1(self, text, pos, width,
-                            fontsize=15,
-                            height=None,
-                            font=None,
-                            bg=(100,100,100),
-                            fgcolor=(255,255,255),
-                            hlcolor=(255,10,150,100),
-                            split=False):
-        """ pos and width are necessary. """
-        if not type(text)==unicode:
-            text = unicode(text.expandtabs(4),'utf8')
-        t = Reader( text, pos, width, fontsize, height, font, bg, fgcolor, hlcolor, split)
-        return t
+    pass
 
 
 
-
-
-
-
-
-
-
-
-class HighScore(object):
+class HighScore( util.ModuleBasic ):
     def __init__(self, control_panel, operators, mapper):
         self.cp = control_panel
         self.ops = operators
@@ -60,8 +29,8 @@ class HighScore(object):
         # specific variables for this cluster
         self.reader = None
 
-        # PlayerName : { OpponentName:NumberOfWins,  OpponentName:NumberOfWins }
-        self.scores = small_util.read_pickle_file( "high_scores.txt" )
+        # PlayerName : { OpponentName1:NumberOfWins,  OpponentName2:NumberOfWins }
+        self.scores = small_util.read_pickle_file( "high_scores.txt" ) or {}
 
 
         self.objects_scores = {}
@@ -110,10 +79,19 @@ class HighScore(object):
 
 
         text = ""
-        r = self.maker.make_reader( text, (94, 58), 615, "normallllllllllllllll")
+        r = self.maker.make_reader( text, (94, 58), 615, "style_reader1")
         self.map.objects_scores["reader"] = r
         self.reader = r     # simply a local handle to the reader (shortcut)
 
+
+
+    def debug_setup(self):
+        """Use this to define the infrastructure that will be needed for the
+        module to function. In other words define the objects which affect
+        the module's initial entering and/or exiting conditions. Things that
+        surround this module, but are also implemented elsewhere. Call this function
+        when you want to test one module in isolation.
+        """
 
         rect = pygame.Rect( (80,180), (160,60))
         img = "scores"

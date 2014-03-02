@@ -1,6 +1,24 @@
 import pygame
 import os
-from elements import Button, Reader
+
+from elements import Button, Reader, Form, FormPrompter
+import styles
+
+
+class ModuleBasic( object ):
+
+    def setup(self):
+        return
+
+    def debug_setup(self):
+        """Use this to define the infrastructure that will be needed for the
+        module to function. In other words define the objects which affect
+        the module's initial entering and/or exiting conditions. Things that
+        surround this module, but are also implemented elsewhere. Call this function
+        when you want to test one module in isolation.
+        """
+        return
+
 
 
 
@@ -10,7 +28,8 @@ class MakerBasic( object ):
         img_types = ("_out.png", "_over.png", "_down.png")
         all_imgs = ( pygame.image.load( path + extra ).convert()  for extra in img_types )
 
-        if rect: all_imgs = ( pygame.transform.smoothscale(surf, rect.size) for surf in all_imgs )
+        if rect:
+            all_imgs = ( pygame.transform.smoothscale(surf, rect.size) for surf in all_imgs )
 
         return all_imgs
 
@@ -27,40 +46,29 @@ class MakerBasic( object ):
 
     def make_reader(self, text, pos, width, style_name):
         """ text, pos and width are necessary. """
+        #assert getattr( styles, style_name)
+
         if not type(text)==unicode:
             text = unicode(text.expandtabs(4), 'utf8')
 
-        style_reader1 = {
-            "fontsize": 17,
-            "font": "mono",
-            "height": 380,
-            "bgcolor": (150,150,150,0),
-            "fgcolor": (0,0,0,0),           # text color
-            "hlcolor": (180,180,200,0),      # highlighted text color
-            "split": True,                  # wrap lines automatically
-        }
-
-        t = Reader( text, pos, width, style_reader1)
+        style_dict = getattr( styles, style_name, False ) or {}
+        t = Reader( text, pos, width, style_dict)
         return t
 
 
 
-    def make_form(self, pos, width,
-                        fontsize=12,
-                        height=None,
-                        font=None,
-                        bg=(100,100,100),
-                        fgcolor=(250,250,250),
-                        hlcolor=(250,190,150,50),
-                        curscolor=(190,0,10),
-                        maxlines=0):
+    def make_form(self, pos, width, style_name):
         """ Creates a form, but remember that a form's input can not be grabbed without a form confirmation button"""
-        f = Form( pos, width, fontsize, height, font, bg, fgcolor, hlcolor, curscolor, maxlines)
+
+        style_dict = getattr( styles, style_name, False ) or {}
+        f = Form( pos, width, style_dict)
         return f
 
 
 
-    def make_form_prompter(self, some_form, rect, func_to_call, img_name="confirm", rescale=False):
+    def make_form_prompter(self, some_form, rect, func_to_call, img_name="start", rescale=False):
+        img_reference = os.path.join( "img", img_name)
+
         surf_list = self.get_surfaces( img_reference, rect) if rescale else self.get_surfaces( img_reference )
 
         fm = FormPrompter( surf_list, rect, func_to_call, {"user_input":""}, some_form )    # the "some_form" here referes to any Form that would be used to grab the user's input
@@ -79,8 +87,7 @@ class MakerBasic( object ):
 class ActiveGroup( pygame.sprite.RenderUpdates ):
 
     def add(self, *sprites):
-        """add sprite to group
-           This is an inside method. Call .bind() to bind/add to group
+        """This is an inside method. Call .bind() to bind/add to group
            Add a sprite or sequence of sprites to a group."""
         for sprite in sprites:
             if not self.has_internal(sprite):
@@ -88,8 +95,7 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
                 sprite.add_internal(self)
 
     def remove(self, *sprites):
-        """remove sprite from group
-           This is an inside method. Call .unbind() to unbind/remove to group
+        """This is an inside method. Call .unbind() to unbind/remove to group
            Remove a sprite or sequence of sprites from a group."""
         for sprite in sprites:
             if self.has_internal(sprite):
@@ -98,24 +104,21 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
 
 
 
-    def bind(self, stuff=None, *args, **kwargs):
+    def bind(self, stuff=None, **kwargs):
         """add(sprite, list, or group, ...)
-           add sprite to group
            Add a sprite or sequence of sprites to a group."""
         try:           # presume that it is a dictionary
             self.add(  *getattr(stuff, "values", None)()  )
         except TypeError:       # its not a dict, then it must be an iterable.
             self.add( *stuff )
 
-    def unbind(self, stuff=None, *args, **kwargs):
+    def unbind(self, stuff=None, **kwargs):
         """remove(sprite, list, or group, ...)
-           remove sprite from group
            remove a sprite or sequence of sprites from a group."""
         try:           # presume that it is a dictionary
             self.remove(  *getattr(stuff, "values", None)()  )
         except TypeError:       # its not a dict, then it must be an iterable.
             self.remove( *stuff )
-
 
 
 
@@ -129,7 +132,6 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
             If you want to pass something use receive_event( something )
             call run for all member sprites, so they can act on info received.
             this is the second step of the update process."""
-        #print len(self.sprites())
         for s in self.sprites(): s.run(*args)
 
     def manage_render(self, surface):
