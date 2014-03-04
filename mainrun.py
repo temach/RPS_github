@@ -29,7 +29,8 @@ import m_mainmenu
 import m_splash
 import m_scores
 import m_pickname
-
+import m_pickweapon
+import m_showwinner
 
 class Operator(object):     # The operator describes what functions there are, in your files you describe how they work.
     def __init__(self):
@@ -45,6 +46,7 @@ class Operator(object):     # The operator describes what functions there are, i
         #self.func_submit_weapon = FunctionsGroup()
         self.func_pick_weapon = FunctionsGroup()
 
+        self.func_show_winner = FunctionsGroup()
 
 
 
@@ -54,8 +56,8 @@ class Mapper(object):      # Describes what options you have. In your files you 
         self.objects_splash_screen = {}     # the first thing to be bind'ed
         self.objects_scores = {}
         self.objects_pick_name = {}
-
-
+        self.objects_pick_weapon = {}
+        self.objects_show_winner = {}
 
 pygame.init()
 
@@ -87,19 +89,27 @@ active = ActiveGroup()
 module1 = m_mainmenu.MainMenuModule( active, operators, mapper )
 module1.setup()
 
-module2 = m_splash.SplashModule( active, operators, mapper )
-module2.setup()
+#module2 = m_splash.SplashModule( active, operators, mapper )
+#module2.setup()
 
 module3 = m_scores.HighScore( active, operators, mapper )
 module3.setup()
+#module3.debug_setup()
 
 module4 = m_pickname.PickName( active, operators, mapper )
 module4.setup()
+#module4.debug_setup()
 
+module5 = m_pickweapon.PickWeapon( active, operators, mapper )
+module5.setup()
+#module5.debug_setup()
 
+module6 = m_showwinner.ShowWinner( active, operators, mapper )
+module6.setup()
+#module6.debug_setup()
 
-#active.bind( mapper.objects_menu )
-operators.func_game()
+active.bind( mapper.objects_menu )
+#operators.func_game()
 
 
 legal_events = (PL.KEYDOWN, PL.KEYUP, PL.MOUSEMOTION, PL.MOUSEBUTTONUP, PL.MOUSEBUTTONDOWN)
@@ -107,14 +117,14 @@ keyboard_events =(PL.KEYDOWN, PL.KEYUP)
 
 
 while True:
-    event_que = pygame.event.get()
+    event = pygame.event.wait()
 
-    for event in event_que:
-        if event.type==PL.QUIT or ( (event.type in keyboard_events) and (event.key == PL.K_q or event.key==PL.K_ESCAPE) ):
-            exit()
+    #for event in event_que:
+    if event.type==PL.QUIT or ( (event.type in keyboard_events) and (event.key == PL.K_q or event.key==PL.K_ESCAPE) ):
+        exit()
 
-        elif event.type in legal_events:
-            active.manage_event( event )
+    elif event.type in legal_events:
+        active.manage_event( event )
 
     active.clear(screen, background)
 
@@ -123,7 +133,7 @@ while True:
 
     active.manage_run()
 
-    clock.tick(40)
+    clock.tick(30)
 
 
 

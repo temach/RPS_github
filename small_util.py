@@ -19,6 +19,10 @@ def read_pickle_file( filepath ):
         return None # happens if high_scores.txt file is completely empty. (When run for the first time)   EOFError = End Of File Error
 
 
+def write_pickle_file( filepath, data ):
+    with open( filepath, 'wb') as datafile:
+        pickle.dump( data, datafile )
+
 
 
 

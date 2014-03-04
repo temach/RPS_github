@@ -30,3 +30,13 @@ style_reader1 = {           # small reader
     "hlcolor": (180,180,200,0),      # highlighted text color
     "split": True,                  # wrap lines automatically
 }
+
+style_reader2 = {           # small reader
+    "fontsize": 17,
+    "font": "mono",
+    "height": 300,
+    "bgcolor": (150,150,150,0),
+    "fgcolor": (0,0,0,0),           # text color
+    "hlcolor": (180,180,200,0),      # highlighted text color
+    "split": True,                  # wrap lines automatically
+}
