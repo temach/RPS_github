@@ -40,12 +40,9 @@ class Operator(object):     # The operator describes what functions there are, i
         self.func_credits = FunctionsGroup()
         self.func_splash_screen = FunctionsGroup()
 
-        #self.func_submit_name = FunctionsGroup()
         #self.func_pick_name = FunctionsGroup()     Suggestion: replace self.func_game with this
 
-        #self.func_submit_weapon = FunctionsGroup()
         self.func_pick_weapon = FunctionsGroup()
-
         self.func_show_winner = FunctionsGroup()
 
 
@@ -89,8 +86,8 @@ active = ActiveGroup()
 module1 = m_mainmenu.MainMenuModule( active, operators, mapper )
 module1.setup()
 
-#module2 = m_splash.SplashModule( active, operators, mapper )
-#module2.setup()
+module2 = m_splash.SplashModule( active, operators, mapper )
+module2.setup()
 
 module3 = m_scores.HighScore( active, operators, mapper )
 module3.setup()
@@ -102,11 +99,12 @@ module4.setup()
 
 module5 = m_pickweapon.PickWeapon( active, operators, mapper )
 module5.setup()
-#module5.debug_setup()
+module5.debug_setup()
 
 module6 = m_showwinner.ShowWinner( active, operators, mapper )
+module6.debug_setup()
 module6.setup()
-#module6.debug_setup()
+
 
 active.bind( mapper.objects_menu )
 #operators.func_game()

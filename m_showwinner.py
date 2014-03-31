@@ -1,7 +1,6 @@
 #! /usr/bin/env python-32
 # -*- coding: utf-8 -*-
 
-import pickle
 import pygame
 import pygame.locals as PL
 import collections as col
@@ -18,7 +17,6 @@ class MakerLocal( util.MakerBasic ):
 
 
 class ShowWinner( util.ModuleBasic ):
-
     Player = col.namedtuple('Player', ['name', 'weapon'])
 
     win_text = """
@@ -117,17 +115,17 @@ class ShowWinner( util.ModuleBasic ):
 
         rect = pygame.Rect( (40,460), (100,64))
         img = "menu"
-        b = self.maker.make_button( rect, self.ops.func_main_menu, img, func_vars=None, rescale=True)
+        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
         self.map.objects_show_winner["main_menu"] = b
 
         rect = pygame.Rect( (656,474), (94,47))
         img = "next"
-        b = self.maker.make_button( rect, self.ops.func_pick_weapon, img, func_vars={}, rescale=True)
+        b = self.maker.make_button( rect, "style_button_next", self.ops.func_pick_weapon, func_vars={}, rescale=True)
         self.map.objects_show_winner["continue_playing_rounds"] = b
 
         rect = pygame.Rect( (560,309), (110,64))
         img = "scores"
-        b = self.maker.make_button( rect, self.ops.func_view_scores, img, func_vars={"view_from":"display_winner"}, rescale=True)
+        b = self.maker.make_button( rect, "style_button_scores", self.ops.func_view_scores, func_vars={"view_from":"display_winner"}, rescale=True)
         self.map.objects_show_winner["view_scores"] = b
 
 
@@ -143,8 +141,9 @@ class ShowWinner( util.ModuleBasic ):
         # create toys/things for the space
         rect = pygame.Rect( (80,80), (160,60))
         img = "start"
-        b = self.maker.make_button(rect, self.ops.func_show_winner, img, func_vars={"pl_name1":"ArtemIsTesting", "pl_name2":"SomeWinner",
-                                                                                    "pl1_weapon":"rock", "pl2_weapon":"paper" }, rescale=True )
+        info = style.style_button_start
+        b = self.maker.make_button( pos=(80,80), **style.style_button_start, func=self.ops.func_show_winner, func_vars={"pl_name1":"ArtemIsTesting", "pl_name2":"SomeWinner",
+                                                                                                                                "pl1_weapon":"rock", "pl2_weapon":"paper" }, rescale=True )
 
         self.map.objects_menu["func_game"] = b
 

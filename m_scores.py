@@ -82,14 +82,10 @@ class HighScore( util.ModuleBasic ):
         self.ops.func_main_menu.append( self.func_menu )
 
         # things that exist within the space
-        rect = pygame.Rect( (40,460), (100,90))
-        img = "menu"
-        b = self.maker.make_button( rect, self.ops.func_main_menu, img, func_vars=None, rescale=True)
+        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
         self.map.objects_scores["exit_to_menu"] = b
 
-        rect = pygame.Rect( (400,460), (100,90))
-        img = "next"
-        b = self.maker.make_button( rect, self.ops.func_show_winner, img, func_vars=None, rescale=True)
+        b = self.maker.make_button( (400,460), "style_button_next", self.ops.func_show_winner, func_vars=None, rescale=True)
         self._objects_scores["exit_to_winner"] = b
 
 
@@ -108,8 +104,6 @@ class HighScore( util.ModuleBasic ):
         when you want to test one module in isolation.
         """
 
-        rect = pygame.Rect( (80,180), (160,60))
-        img = "scores"
-        b = self.maker.make_button(rect, self.ops.func_view_scores, img, func_vars={"view_from":"menu"}, rescale=True)
+        b = self.maker.make_button( (80,180), "style_button_scores", self.ops.func_view_scores, func_vars={"view_from":"menu"}, rescale=True)
         self.map.objects_menu["func_view_scores"] = b
 

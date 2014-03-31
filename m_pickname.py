@@ -132,10 +132,9 @@ class PickName( util.ModuleBasic ):
         self.ops.func_game.append( self.func_game )
         self.ops.func_pick_weapon.append( self.func_pick_weapon )
 
+
         # things that exist within the space
-        rect = pygame.Rect( (40,460), (100,90))
-        img = "menu"
-        b = self.maker.make_button( rect, self.ops.func_main_menu, img, func_vars=None, rescale=True)
+        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
         self.map.objects_pick_name["func_main_menu"] = b
 
         text = ""
@@ -172,9 +171,7 @@ class PickName( util.ModuleBasic ):
 
 
         # create toys/things for the space
-        rect = pygame.Rect( (80,50), (160,60))
-        img = "start"
-        b = self.maker.make_button(rect, self.ops.func_game, img, func_vars=None, rescale=True)
+        b = self.maker.make_button( (80,50), "style_button_start", self.ops.func_game, func_vars=None, rescale=True)
         self.map.objects_menu["func_game"] = b
 
 
