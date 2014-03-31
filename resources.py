@@ -48,7 +48,7 @@ def get_image(filename, force_reload = 0):
         raise ValueError, "resources.set_images_path() not called yet."
     if (force_reload == 1) or (filename not in __images.keys()):
         try:
-            surface = pygame.image.load(os.path.join(__images_path, filename)).convert()
+            surface = pygame.image.load(os.path.join(__images_path, filename))
         except pygame.error:
             raise IOError( "Could not load file '{0}'   {1}".format(filename, pygame.get_error()) )
         __images[filename] = surface
@@ -172,7 +172,6 @@ def set_images_path(path):
         raise IOError, path + " not found."
     if path.endswith(os.sep):
         path = path[:-1]
-    global __images_path
     __images_path = path        # setting global variable
     return 1
 
@@ -187,7 +186,6 @@ def set_fonts_path(path):
         raise IOError, path + " not found."
     if path.endswith(os.sep):
         path = path[:-1]
-    global __fonts_path
     __fonts_path = path             # setting global variable
     return 1
 
@@ -202,7 +200,6 @@ def set_sounds_path(path):
         raise IOError, path + " not found."
     if path.endswith(os.sep):
         path = path[:-1]
-    global __sounds_path
     __sounds_path = path            # setting global variable
     return 1
 

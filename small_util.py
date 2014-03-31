@@ -1,6 +1,5 @@
 import pickle
-import pygame
-import pygame.locals as PL
+
 
 def debug( func_to_wrap ):
     def print_arguments_wrapper( *args ):       # this wrapped prints the arguments to the function
@@ -28,12 +27,7 @@ def write_pickle_file( filepath, data ):
 
 
 class FunctionsGroup( list ):
-    REFRESH = PL.USEREVENT + 1
-    REFRESHEVENT = pygame.event.Event(REFRESH, info="Send an event to pygame.event.wait to refresh the screen")
-
     def __call__(self, func_vars=None):
         for func in self:
             func( func_vars )
-
-        pygame.event.post( self.REFRESHEVENT )
 

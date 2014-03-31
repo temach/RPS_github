@@ -1,1 +1,0 @@
-creation parameters for buttons should be key word arguments. There will be an overall styles.py file for system wide settings. There will be an ability to set style elements of each object.

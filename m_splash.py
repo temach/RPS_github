@@ -83,7 +83,6 @@ class SplashModule( util.ModuleBasic ):
 
         # Slowly fade the splash screen image from white to opaque.
         splash = pygame.image.load( self.image_path ).convert()
-        splash = pygame.transform.smoothscale( splash, (800,600) )
 
         for i in range(27):
             pygame.event.pump()     # tell OS that we are processing events otherwise it thinks the app is frozen

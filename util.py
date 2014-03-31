@@ -3,7 +3,6 @@ import os
 
 from elements import Button, Reader, Form, FormPrompter
 import styles
-import resources
 
 
 class ModuleBasic( object ):
@@ -21,42 +20,25 @@ class ModuleBasic( object ):
         return
 
 
-class StyleLoader( object ):
-    resources.set_images_path( "img" )
-    resources.set_sounds_path( "sounds" )
 
-    print "ACTIVATED Style Loader"
-    def __init__(self):
-        print "hello from instance of style loader"
 
-    def get_button_surfaces(self, img_name, size=False):
-        assert "." not in img_name, "You have a '.' in the image name stated in 'styles.py': " + img_name + "  \nThis should be image for a button. Please remove the '.' character (and/or the image extension) in the 'styles.py' file."
+class MakerBasic( object ):
+
+    def get_surfaces(self, path, rect=False):
         img_types = ("_out.png", "_over.png", "_down.png")
-        all_imgs = ( resources.get_image( img_name + extra ) for extra in img_types )
+        all_imgs = ( pygame.image.load( path + extra ).convert()  for extra in img_types )
 
-        # if size if False, return unmodified imgs, else return a generator of modified imgs.
-        return all_imgs if (not size) else ( pygame.transform.smoothscale(surf, size) for surf in all_imgs )
+        if rect:
+            all_imgs = ( pygame.transform.smoothscale(surf, rect.size) for surf in all_imgs )
 
-
-    def get_img(self, img_name, size=False):
-        surf = resources.get_image( img_name )
-        return surf if (not size) else pygame.transform.smoothscale(surf, size)
+        return all_imgs
 
 
+    def make_button(self, rect, func_to_call, img_name, func_vars=None, rescale=False):
+        img_reference = os.path.join( "img", img_name)
 
-class MakerBasic( StyleLoader ):
-
-    print "Activated Maker Basics"
-
-    def make_button(self, pos, style_name, func_to_call, func_vars=None, rescale=True):
-        assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called " + style_name + "\n Check your spelling."
-        assert type( pos )==tuple, "Variable 'pos' has strange type. Should be a tuple of (x,y)."
-        assert type( func_vars )==dict, "Variable 'func_vars' has strange type. Should be a dictionary."
-
-        style_dict = getattr( styles, style_name )
-
-        surf_list = self.get_button_surfaces( style_dict["img"], style_dict["size"] )
-        rect = pygame.Rect( pos, style_dict["size"] )
+        surf_list = (rescale and self.get_surfaces( img_reference, rect)) or self.get_surfaces( img_reference )
+        # Above trick: google for "python and/or trick to select values inline"
 
         b = Button( surf_list, rect, func_to_call, func_vars)
         return b
@@ -64,12 +46,12 @@ class MakerBasic( StyleLoader ):
 
     def make_reader(self, text, pos, width, style_name):
         """ text, pos and width are necessary. """
-        assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called ", style_name, "\n Check your spelling."
+        #assert getattr( styles, style_name)
 
         if not type(text)==unicode:
             text = unicode(text.expandtabs(4), 'utf8')
 
-        style_dict = getattr( styles, style_name )
+        style_dict = getattr( styles, style_name, False ) or {}
         t = Reader( text, pos, width, style_dict)
         return t
 

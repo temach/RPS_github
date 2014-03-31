@@ -13,19 +13,18 @@ import small_util
 
 
 class MakerLocal( util.MakerBasic ):
-    def make_button(self **kwargs):
-        super( MakerLocal, self ).make_button( **kwargs)
+    pass
 
 
 
 class PickWeapon( util.ModuleBasic ):
     text_pl1 = """
-        Time to Choose you Tool Mr. {name}!
+                    Time to Choose you Tool! Player 1
 """
 
     text_pl2 = """
                     Now its time!
-                     for {name}
+                     for player2
                          to
                     find his way!
 """
@@ -61,20 +60,12 @@ class PickWeapon( util.ModuleBasic ):
         self.cp.unbind( self._objects_pick_weapon1 )
         self.cp.unbind( self._objects_pick_weapon2 )
 
-
-
     def func_pick_weapon(self, func_vars=None):
         self.cur_pl = 1
-
-        # if there is one name, there are two.
-        if "pl_name1" in func_vars:
-            self.pl_name1, self.pl_name2 = func_vars["pl_name1"], func_vars["pl_name2"]
-            self.text_pl1, self.text_pl2 = self.text_pl1.format( name=self.pl_name1 ), self.text_pl2.format( name=self.pl_name2 )
-
-            self._func_change_active_player( {"change_to_player":1} )
+        if "pl_name1" in func_vars:     # if there is one name, there are two.
+            self.pl_name1 = func_vars["pl_name1"]
+            self.pl_name2 = func_vars["pl_name2"]
             print "Got names   ", self.pl_name1, "   ", self.pl_name2
-
-        # if there are no names we just show the cached info from latest session.
         self.cp.bind( self.map.objects_pick_weapon )
         self.cp.bind( self._objects_pick_weapon1 )
     """ End modify section """
@@ -86,13 +77,13 @@ class PickWeapon( util.ModuleBasic ):
             self.pl1_weapon = func_vars["weapon"]
             print "player1 weapon", self.pl1_weapon
 
-        else:     # if cur_pl==2
+        else:       # cur_pl==2
             self.pl2_weapon = func_vars["weapon"]
             print "player2 weapon", self.pl2_weapon
 
 
     def _func_change_active_player(self, func_vars=None):
-        assert func_vars["change_to_player"] in (1, 2, False), "Problem: want to change to some wierd player number. "
+        assert func_vars["change_to_player"] in (1, 2, False), "Problem: want to change to some wierd player number."
 
         self.cur_pl = func_vars["change_to_player"]
 
@@ -122,9 +113,10 @@ class PickWeapon( util.ModuleBasic ):
         self.ops.func_pick_weapon.append( self.func_pick_weapon )
         self.ops.func_show_winner.append( self.func_show_winner )
 
-
         # things that exist within the space
-        b = self.maker.make_button( (40,460), "style_button_restart", self._func_change_active_player, func_vars={"change_to_player":1}, rescale=True)
+        rect = pygame.Rect( (40,460), (100,90))
+        img = "restart"
+        b = self.maker.make_button( rect, self._func_change_active_player, img, func_vars={"change_to_player":1}, rescale=True)
         self.map.objects_pick_weapon["func_restart_round"] = b
 
         r = self.maker.make_reader( self.text_pl1, (94, 58), 600, "style_reader1")
@@ -133,25 +125,47 @@ class PickWeapon( util.ModuleBasic ):
 
 
 
-        b = self.maker.make_button_new( (186,170), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, True)
+
+        rect = pygame.Rect( (186,170), (140,70))
+        img = "rock"
+        b = self.maker.make_button( rect, self._func_submit_weapon, img, {"weapon":"rock"}, True)
         self._objects_pick_weapon1["weapon_choice1"] = b
-        b = self.maker.make_button( (331,176), "style_button_paper", self._func_submit_weapon, {"weapon":"paper"}, True)
+
+        rect = pygame.Rect( (331,176), (140,70))
+        img = "paper"
+        b = self.maker.make_button( rect, self._func_submit_weapon, img, {"weapon":"paper"}, True)
         self._objects_pick_weapon1["weapon_choice2"] = b
-        b = self.maker.make_button( (490,170), "style_button_scissors", self._func_submit_weapon, {"weapon":"scissors"}, True)
+
+        rect = pygame.Rect( (490,170), (140,70))
+        img = "scissors"
+        b = self.maker.make_button( rect, self._func_submit_weapon, img, {"weapon":"scissors"}, True)
         self._objects_pick_weapon1["weapon_choice3"] = b
 
-        b = self.maker.make_button( (696,173), "style_button_confirm", self._func_change_active_player, func_vars={"change_to_player":2}, rescale=True)
+        rect = pygame.Rect( (696,173), (67,65))
+        img = "confirm"
+        b = self.maker.make_button( rect, self._func_change_active_player, img, func_vars={"change_to_player":2}, rescale=True)
         self._objects_pick_weapon1["next_pl"] = b
 
 
-        b = self.maker.make_button( (186,294), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, True)
+
+        rect = pygame.Rect( (186,294), (140,70))
+        img = "rock"
+        b = self.maker.make_button( rect, self._func_submit_weapon, img, {"weapon":"rock"}, True)
         self._objects_pick_weapon2["weapon_choice1"] = b
-        b = self.maker.make_button( (331,294), "style_button_paper", self._func_submit_weapon, {"weapon":"paper"}, True)
+
+        rect = pygame.Rect( (331,294), (140,70))
+        img = "paper"
+        b = self.maker.make_button( rect, self._func_submit_weapon, img, {"weapon":"paper"}, True)
         self._objects_pick_weapon2["weapon_choice2"] = b
-        b = self.maker.make_button( (490,294), "style_button_scissors", self._func_submit_weapon, {"weapon":"scissors"}, True)
+
+        rect = pygame.Rect( (490,294), (140,70))
+        img = "scissors"
+        b = self.maker.make_button( rect, self._func_submit_weapon, img, {"weapon":"scissors"}, True)
         self._objects_pick_weapon2["weapon_choice3"] = b
 
-        b = self.maker.make_button( (694,297), "style_button_confirm", self._func_change_active_player, func_vars={"change_to_player":False}, rescale=True)
+        rect = pygame.Rect( (694,297), (83,72))
+        img = "confirm"
+        b = self.maker.make_button( rect, self._func_change_active_player, img, func_vars={"change_to_player":False}, rescale=True)
         self._objects_pick_weapon2["next_pl"] = b
 
 
@@ -165,7 +179,9 @@ class PickWeapon( util.ModuleBasic ):
         """
 
         # create toys/things for the space
-        b = self.maker.make_button( (80,80), "style_button_start", self.ops.func_pick_weapon, func_vars={"pl_name1":"James Brown", "pl_name2":"pl2_Very Long Name For Laughter"}, rescale=True)
+        rect = pygame.Rect( (80,80), (160,60))
+        img = "start"
+        b = self.maker.make_button(rect, self.ops.func_pick_weapon, img, func_vars={"pl_name1":"TestingArtem", "pl_name2":"TestingPlayer2Name"}, rescale=True)
         self.map.objects_menu["func_game"] = b
 
 
