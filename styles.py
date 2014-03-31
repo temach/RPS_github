@@ -1,3 +1,5 @@
+print "Hello"
+
 # first one below is a preset
 style_button_menu = dict( size=(70,70) )
 
@@ -25,9 +27,9 @@ style_button_menu = dict(
     img="menu",
     **style_button_menu  )
 
-style_button_next = dict(           # start next round from the view winner screen
-    img="next",
-    **style_button_menu  )
+#style_button_next = dict(           # start next round from the view winner screen
+#    img="next",
+#    **style_button_menu  )
 
 
 # first one below is a preset

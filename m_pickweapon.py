@@ -13,7 +13,7 @@ import small_util
 
 
 class MakerLocal( util.MakerBasic ):
-    def make_button(self **kwargs):
+    def make_button(self, **kwargs):
         super( MakerLocal, self ).make_button( **kwargs)
 
 
