@@ -29,7 +29,7 @@ class StyleLoader( object ):
     def __init__(self):
         print "hello from instance of style loader"
 
-    def get_button_surfaces_new(self, img_name, size=False):
+    def get_button_surfaces(self, img_name, size=False):
         assert "." not in img_name, "You have a '.' in the image name stated in 'styles.py': " + img_name + "  \nThis should be image for a button. Please remove the '.' character (and/or the image extension) in the 'styles.py' file."
         img_types = ("_out.png", "_over.png", "_down.png")
         all_imgs = ( resources.get_image( img_name + extra ) for extra in img_types )
@@ -48,14 +48,14 @@ class MakerBasic( StyleLoader ):
 
     print "Activated Maker Basics"
 
-    def make_button_new(self, pos, style_name, func_to_call, func_vars=None, rescale=True):
+    def make_button(self, pos, style_name, func_to_call, func_vars=None, rescale=True):
         assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called " + style_name + "\n Check your spelling."
         assert type( pos )==tuple, "Variable 'pos' has strange type. Should be a tuple of (x,y)."
         assert type( func_vars )==dict, "Variable 'func_vars' has strange type. Should be a dictionary."
 
         style_dict = getattr( styles, style_name )
 
-        surf_list = self.get_button_surfaces_new( style_dict["img"], style_dict["size"] )
+        surf_list = self.get_button_surfaces( style_dict["img"], style_dict["size"] )
         rect = pygame.Rect( pos, style_dict["size"] )
 
         b = Button( surf_list, rect, func_to_call, func_vars)
@@ -64,7 +64,7 @@ class MakerBasic( StyleLoader ):
 
     def make_reader(self, text, pos, width, style_name):
         """ text, pos and width are necessary. """
-        assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called  {0}\n Check your spelling.".format( style_name )
+        assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called ", style_name, "\n Check your spelling."
 
         if not type(text)==unicode:
             text = unicode(text.expandtabs(4), 'utf8')
@@ -91,6 +91,10 @@ class MakerBasic( StyleLoader ):
 
         fm = FormPrompter( surf_list, rect, func_to_call, {"user_input":""}, some_form )    # the "some_form" here referes to any Form that would be used to grab the user's input
         return fm
+
+
+
+
 
 
 
