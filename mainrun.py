@@ -31,6 +31,7 @@ import m_scores
 import m_pickname
 import m_pickweapon
 import m_showwinner
+import m_info
 
 class Operator(object):     # The operator describes what functions there are, in your files you describe how they work.
     def __init__(self):
@@ -39,7 +40,7 @@ class Operator(object):     # The operator describes what functions there are, i
         self.func_view_scores = FunctionsGroup()
         self.func_credits = FunctionsGroup()
         self.func_splash_screen = FunctionsGroup()
-
+        self.func_info = FunctionsGroup()
         #self.func_pick_name = FunctionsGroup()    # Suggestion: replace self.func_game with this
 
         self.func_pick_weapon = FunctionsGroup()
@@ -49,6 +50,7 @@ class Operator(object):     # The operator describes what functions there are, i
 
 class Mapper(object):      # Describes what options you have. In your files you describe how these dictionaries look, the Mapper describes what dictionaries there are.
     def __init__(self):
+        self.objects_info = {}
         self.objects_menu = {}
         self.objects_splash_screen = {}     # the first thing to be bind'ed
         self.objects_scores = {}
@@ -96,8 +98,7 @@ module2.setup()
 
 module4 = m_pickname.PickName( active, operators, mapper )
 module4.setup()
-#module4.debug_setup()
-
+module4.debug_setup()
 
 module5 = m_pickweapon.PickWeapon( active, operators, mapper )
 module5.setup()
@@ -106,6 +107,9 @@ module5.setup()
 module6 = m_showwinner.ShowWinner( active, operators, mapper )
 module6.setup()
 #module6.debug_setup()
+
+module7 = m_info.Info( active, operators, mapper )
+module7.setup()
 
 active.bind( mapper.objects_menu )
 #operators.func_game()

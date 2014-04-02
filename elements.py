@@ -70,7 +70,10 @@ class Button( ElementBase ):
 
         self.mouseout_img, self.mouseover_img, self.mousedown_img = imgs_list
 
-
+        try:
+            print self.func.__name__, id( self.mouseover_img )
+        except AttributeError:
+            print self, id( self.mouseover_img )
 
     def run(self):
         if self.state=="mouseclick":

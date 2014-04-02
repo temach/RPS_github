@@ -27,6 +27,9 @@ style_button_menu = dict(
     img="menu",
     **style_button_menu  )
 
+style_button_quit = dict(
+    img="quit",
+    size=(90,50)  )
 
 
 # first one below is a preset

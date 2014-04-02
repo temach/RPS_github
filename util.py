@@ -23,7 +23,7 @@ class ModuleBasic( object ):
 
 class StyleLoader( object ):
     resources.set_images_path( "img" )
-    resources.set_sounds_path( "sounds" )
+    resources.set_sounds_path( "sound" )
 
 
     def get_button_surfaces(self, img_name, size=False):
@@ -41,7 +41,8 @@ class StyleLoader( object ):
         surf = resources.get_image( img_name )
         return surf if (not size) else pygame.transform.smoothscale(surf, size)
 
-
+    def change_menu_imgs(self):
+        resources.get_image("menu_over.png", True)
 
 
 class MakerBasic( StyleLoader ):
@@ -71,6 +72,7 @@ class MakerBasic( StyleLoader ):
         assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called " + str(style_name) + " . Check your spelling."
         assert type( pos )==tuple, "Variable 'pos' has strange type. Should be a tuple of (x,y)."
         assert (type( func_vars )==dict) or (func_vars is None), "Variable 'func_vars' has strange type. Should be a dictionary."
+        print "make_button() ", self.__module__, self
 
         style_dict = getattr( styles, style_name )
 
@@ -91,7 +93,6 @@ class MakerBasic( StyleLoader ):
         style_dict = getattr( styles, style_name )
         t = Reader( text, pos, width, style_dict)
         return t
-
 
 
     def make_form(self, pos, width, style_name):

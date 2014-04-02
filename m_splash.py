@@ -66,11 +66,6 @@ class SplashModule( util.ModuleBasic ):
         self.image_path = os.path.join("data", "gimpysplash1.png")
 
 
-    def func_main_menu(self, func_vars):
-        self.active.unbind( self.map.objects_splash_screen )
-        self.active.bind( self.map.objects_menu )
-
-
     def func_splash_screen(self, func_vars=None):       # entry point
         """
         Show the splash screen.
@@ -99,11 +94,12 @@ class SplashModule( util.ModuleBasic ):
 
         screen.fill( (255,255,255) )    # clean up by erasing the background to normal white
 
+        self.active.unbind( self.map.objects_splash_screen )
         self.ops.func_main_menu()
 
 
     def setup(self):
-        self.ops.func_main_menu.append( self.func_main_menu )
+        #self.ops.func_main_menu.append( self.func_main_menu )
         self.ops.func_splash_screen.append( self.func_splash_screen )
 
         sp = self.maker.make_splash( self.ops.func_splash_screen, {"screen":None} )

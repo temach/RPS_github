@@ -11,6 +11,7 @@ import small_util
 
 
 
+
 class MakerLocal( util.MakerBasic ):
     pass
 
@@ -36,7 +37,7 @@ class ShowWinner( util.ModuleBasic ):
         self.reader = None
 
         # PlayerName : { OpponentName1:NumberOfWins,  OpponentName2:NumberOfWins }
-        self.scores = small_util.read_pickle_file( "high_scores.txt" ) or {}
+        self.scores = small_util.read_pickle_file( "high_scores.txt" ) or col.OrderedDict()
         self.scores_file = "high_scores.txt"
 
 

@@ -17,11 +17,11 @@ class MakerLocal( util.MakerBasic ):
 
 
 class PickWeapon( util.ModuleBasic ):
-    text_pl1 = """
+    template_text_pl1 = """
         Time to Choose you Tool Mr. {name}!
 """
 
-    text_pl2 = """
+    template_text_pl2 = """
                     Now its time!
                      for {name}
                          to
@@ -40,13 +40,15 @@ class PickWeapon( util.ModuleBasic ):
         # specific variables for this cluster
         self.reader = None
 
+        self.text_pl1 = ""
         self.pl_name1 = None       # player1 name
         self.pl1_weapon = None
+
+        self.text_pl2 = ""
         self.pl_name2 = None
         self.pl2_weapon = None
 
         self.cur_pl = 1
-
 
         self._objects_pick_weapon1 = {}
         self._objects_pick_weapon2 = {}
@@ -65,21 +67,17 @@ class PickWeapon( util.ModuleBasic ):
         self.cp.unbind( self._objects_pick_weapon1 )
         self.cp.unbind( self._objects_pick_weapon2 )
 
-
     def func_pick_weapon(self, func_vars={}):
         self.cur_pl = 1
 
         # if there is one name, there are two.
         if "pl_name1" in func_vars:
             self.pl_name1, self.pl_name2 = func_vars["pl_name1"], func_vars["pl_name2"]
-            self.text_pl1, self.text_pl2 = self.text_pl1.format( name=self.pl_name1 ), self.text_pl2.format( name=self.pl_name2 )
-
-            self._func_change_active_player( {"change_to_player":1} )
-            print "Got names   ", self.pl_name1, "   ", self.pl_name2
+            self.text_pl1, self.text_pl2 = self.template_text_pl1.format( name=self.pl_name1 ), self.template_text_pl2.format( name=self.pl_name2 )
 
         # if there are no names we just show the cached info from latest session.
         self.cp.bind( self.map.objects_pick_weapon )
-        self.cp.bind( self._objects_pick_weapon1 )
+        self._func_change_active_player( {"change_to_player":1} )
     """ End modify section """
 
 
@@ -93,10 +91,9 @@ class PickWeapon( util.ModuleBasic ):
             self.pl2_weapon = func_vars["weapon"]
             print "player2 weapon", self.pl2_weapon
 
-
     def _func_change_active_player(self, func_vars=None):
         assert func_vars["change_to_player"] in (1, 2, False), "Problem: want to change to some wierd player number. "
-
+        print "hello!"
         self.cur_pl = func_vars["change_to_player"]
 
         if self.cur_pl==1:
@@ -105,19 +102,15 @@ class PickWeapon( util.ModuleBasic ):
             self.cp.unbind( self._objects_pick_weapon2 )
             self.cp.bind( self._objects_pick_weapon1 )
 
-        if self.cur_pl==2:
+        elif self.cur_pl==2:
             self.reader.update_text( self.text_pl2 )
             self.pl2_weapon = None
             self.cp.unbind( self._objects_pick_weapon1 )
             self.cp.bind( self._objects_pick_weapon2 )
 
-        if self.cur_pl is False:    # both pl1 and pl2 have chosen weapons, now its time to resolve battle and show winner.
+        elif self.cur_pl is False:    # both pl1 and pl2 have chosen weapons, now its time to resolve battle and show winner.
             self.ops.func_show_winner( {    "pl_name1":self.pl_name1, "pl_name2":self.pl_name2,
                                             "pl1_weapon":self.pl1_weapon, "pl2_weapon":self.pl2_weapon,} )
-
-
-
-
 
 
     """ Modify default object existence """
@@ -171,7 +164,7 @@ class PickWeapon( util.ModuleBasic ):
         """
 
         # create toys/things for the space
-        b = self.maker.make_button( (80,80), "style_button_start", self.ops.func_pick_weapon, func_vars={"pl_name1":"James Brown", "pl_name2":"pl2_Very Long Name For Laughter"}, rescale=True)
+        b = self.maker.make_button( (80,80), "style_button_game", self.ops.func_pick_weapon, func_vars={"pl_name1":"James Brown", "pl_name2":"pl2_Very Long Name For Laughter"}, rescale=True)
         self.map.objects_menu["func_game"] = b
 
 

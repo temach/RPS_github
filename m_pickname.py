@@ -14,7 +14,9 @@ import small_util
 
 class MakerLocal( util.MakerBasic ):
     pass
-
+    #def __init__(self):
+    #    super( MakerLocal, self ).change_menu_imgs()
+    #    super( MakerLocal, self ).__init__()
 
 
 class PickName( util.ModuleBasic ):
@@ -171,7 +173,7 @@ class PickName( util.ModuleBasic ):
 
 
         # create toys/things for the space
-        b = self.maker.make_button( (80,50), "style_button_start", self.ops.func_game, func_vars=None, rescale=True)
+        b = self.maker.make_button( (80,50), "style_button_game", self.ops.func_game, func_vars=None, rescale=True)
         self.map.objects_menu["func_game"] = b
 
 
