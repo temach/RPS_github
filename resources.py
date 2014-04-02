@@ -2,6 +2,7 @@ import pygame
 import os
 import pygame.image, pygame.font, pygame.mixer # remove for pygame &gt;=1.4
 
+
 """
 resource.py
 A caching resource loader

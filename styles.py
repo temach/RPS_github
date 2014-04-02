@@ -4,19 +4,19 @@ print "Hello"
 style_button_menu = dict( size=(70,70) )
 
 style_button_game = dict(
-    img="start_game",
-    **style_button_menu )
+    img="start",
+    size=(100,80) )
 
 style_button_scores = dict(
     img="scores",
-    **style_button_menu  )
+    size=(90,50)  )
 
 style_button_next = dict(
-    img="next_round",       # next round
+    img="next",           # # start next round from the view winner screen
     size=(94,47)  )
 
 style_button_restart = dict(
-    img="restart",      # restart current round, so let player1 choose weapon again
+    img="restart",              # restart current round, so let player1 choose weapon again
     **style_button_menu  )
 
 style_button_info = dict(
@@ -27,9 +27,6 @@ style_button_menu = dict(
     img="menu",
     **style_button_menu  )
 
-#style_button_next = dict(           # start next round from the view winner screen
-#    img="next",
-#    **style_button_menu  )
 
 
 # first one below is a preset
@@ -48,7 +45,7 @@ style_button_scissors = dict(
     **style_button_weapon )
 
 style_button_confirm = dict(
-    size = (20,20),
+    size = (60,60),
     img = "confirm",
 )
 

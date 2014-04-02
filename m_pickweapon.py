@@ -13,9 +13,7 @@ import small_util
 
 
 class MakerLocal( util.MakerBasic ):
-    def make_button(self, **kwargs):
-        super( MakerLocal, self ).make_button( **kwargs)
-
+    pass
 
 
 class PickWeapon( util.ModuleBasic ):
@@ -54,6 +52,7 @@ class PickWeapon( util.ModuleBasic ):
         self._objects_pick_weapon2 = {}
 
 
+
     """ Modify default function behaviour """
     # What are some of the things that will happen (in terms of this class) when Someone calls "func_mein_menu"
     def func_show_winner(self, func_vars=None):
@@ -61,9 +60,13 @@ class PickWeapon( util.ModuleBasic ):
         self.cp.unbind( self._objects_pick_weapon1 )
         self.cp.unbind( self._objects_pick_weapon2 )
 
+    def func_main_menu( self, func_vars=None):
+        self.cp.unbind( self.map.objects_pick_weapon )
+        self.cp.unbind( self._objects_pick_weapon1 )
+        self.cp.unbind( self._objects_pick_weapon2 )
 
 
-    def func_pick_weapon(self, func_vars=None):
+    def func_pick_weapon(self, func_vars={}):
         self.cur_pl = 1
 
         # if there is one name, there are two.
@@ -121,11 +124,11 @@ class PickWeapon( util.ModuleBasic ):
     def setup(self):
         self.ops.func_pick_weapon.append( self.func_pick_weapon )
         self.ops.func_show_winner.append( self.func_show_winner )
-
+        self.ops.func_main_menu.append( self.func_main_menu )
 
         # things that exist within the space
-        b = self.maker.make_button( (40,460), "style_button_restart", self._func_change_active_player, func_vars={"change_to_player":1}, rescale=True)
-        self.map.objects_pick_weapon["func_restart_round"] = b
+        b = self.maker.make_button( (50,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
+        self.map.objects_pick_weapon["func_main_menu"] = b
 
         r = self.maker.make_reader( self.text_pl1, (94, 58), 600, "style_reader1")
         self.map.objects_pick_weapon["reader"] = r
@@ -133,7 +136,7 @@ class PickWeapon( util.ModuleBasic ):
 
 
 
-        b = self.maker.make_button_new( (186,170), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, True)
+        b = self.maker.make_button( (186,170), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, True)
         self._objects_pick_weapon1["weapon_choice1"] = b
         b = self.maker.make_button( (331,176), "style_button_paper", self._func_submit_weapon, {"weapon":"paper"}, True)
         self._objects_pick_weapon1["weapon_choice2"] = b
@@ -154,6 +157,9 @@ class PickWeapon( util.ModuleBasic ):
         b = self.maker.make_button( (694,297), "style_button_confirm", self._func_change_active_player, func_vars={"change_to_player":False}, rescale=True)
         self._objects_pick_weapon2["next_pl"] = b
 
+        # transfer choice of weapon back to player1
+        b = self.maker.make_button( (600,460), "style_button_restart", self._func_change_active_player, func_vars={"change_to_player":1}, rescale=True)
+        self._objects_pick_weapon2["func_restart_round"] = b
 
 
     def debug_setup(self):

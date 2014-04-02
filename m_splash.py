@@ -63,7 +63,7 @@ class SplashModule( util.ModuleBasic ):
         self.maker = MakerLocal()
 
         self.music_path = os.path.join("data", "splash.ogg")
-        self.image_path = os.path.join("data", "gimpysplash.png")
+        self.image_path = os.path.join("data", "gimpysplash1.png")
 
 
     def func_main_menu(self, func_vars):
