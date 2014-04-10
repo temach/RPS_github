@@ -49,17 +49,17 @@ class MainMenuModule( util.ModuleBasic ):
         self.ops.func_game.append( self.func_game )
 
         # create toys/things for the space
-        b = self.maker.make_button( (80,80), "style_button_game", self.ops.func_game, func_vars=None, rescale=True)
+        b = self.maker.make_button( (80,80), "style_button_game", self.ops.func_game, func_vars=None )
         self.map.objects_menu["func_game"] = b
 
-        b = self.maker.make_button( (100,230), "style_button_scores", self.ops.func_view_scores, func_vars={"view_from":"menu"}, rescale=True)
+        b = self.maker.make_button( (100,230), "style_button_scores", self.ops.func_view_scores, func_vars={"view_from":"menu"})
         self.map.objects_menu["func_view_scores"] = b
 
         # create toys/things for the space
-        b = self.maker.make_button( (600,500), "style_button_quit", sys.exit, func_vars=None, rescale=True)
+        b = self.maker.make_button( (600,500), "style_button_quit", sys.exit, func_vars=None )
         self.map.objects_menu["func_quit"] = b
 
-        b = self.maker.make_button( (580,350), "style_button_info", self.ops.func_info, func_vars=None, rescale=True)
+        b = self.maker.make_button( (580,350), "style_button_info", self.ops.func_info, func_vars=None )
         self.map.objects_menu["func_info"] = b
 
     def debug_setup(self):
@@ -71,5 +71,5 @@ class MainMenuModule( util.ModuleBasic ):
         """
 
         # create toys/things for the space
-        b = self.maker.make_button( (80,80), "style_button_start", self.ops.func_pick_weapon, func_vars={"pl_name1":"James Brown", "pl_name2":"pl2_Very Long Name For Laughter"}, rescale=True)
+        b = self.maker.make_button( (80,80), "style_button_start", self.ops.func_pick_weapon, func_vars={"pl_name1":"James Brown", "pl_name2":"pl2_Very Long Name For Laughter"} )
         self.map.objects_menu["func_game"] = b

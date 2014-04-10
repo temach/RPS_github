@@ -49,7 +49,7 @@ def get_image(filename, force_reload = 0):
         raise ValueError, "resources.set_images_path() not called yet."
     if (force_reload is True) or (filename not in __images.keys()):
         try:
-            surface = pygame.image.load(os.path.join(__images_path, filename)).convert()
+            surface = pygame.image.load(os.path.join(__images_path, filename)).convert_alpha()
         except pygame.error:
             raise IOError( "Could not load file '{0}'   {1}".format(filename, pygame.get_error()) )
         __images[filename] = surface

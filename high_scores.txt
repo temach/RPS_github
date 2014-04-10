@@ -15,7 +15,7 @@ tp6
 Rp7
 Vjisu
 p8
-I2
+I5
 saa(lp9
 Vstanly
 p10
@@ -26,6 +26,16 @@ Rp12
 Vmanly
 p13
 I3
-saatp14
-Rp15
+saa(lp14
+Vjisu
+p15
+ag4
+(g5
+tp16
+Rp17
+Vartem
+p18
+I1
+saatp19
+Rp20
 .

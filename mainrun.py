@@ -58,6 +58,7 @@ class Mapper(object):      # Describes what options you have. In your files you 
         self.objects_pick_weapon = {}
         self.objects_show_winner = {}
 
+pygame.mixer.pre_init(44100)
 pygame.init()
 
 
@@ -86,15 +87,15 @@ active = ActiveGroup()
 
 # Here we enter the names of the modules
 module1 = m_mainmenu.MainMenuModule( active, operators, mapper )
-module1.setup()
+#module1.setup()
 #module1.debug_setup()
 
 module3 = m_scores.HighScore( active, operators, mapper )
-module3.setup()
+#module3.setup()
 #module3.debug_setup()
 
 module2 = m_splash.SplashModule( active, operators, mapper )
-module2.setup()
+#module2.setup()
 
 module4 = m_pickname.PickName( active, operators, mapper )
 module4.setup()
@@ -105,11 +106,11 @@ module5.setup()
 #module5.debug_setup()
 
 module6 = m_showwinner.ShowWinner( active, operators, mapper )
-module6.setup()
+#module6.setup()
 #module6.debug_setup()
 
 module7 = m_info.Info( active, operators, mapper )
-module7.setup()
+#module7.setup()
 
 active.bind( mapper.objects_menu )
 #operators.func_game()

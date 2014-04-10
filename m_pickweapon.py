@@ -120,7 +120,7 @@ class PickWeapon( util.ModuleBasic ):
         self.ops.func_main_menu.append( self.func_main_menu )
 
         # things that exist within the space
-        b = self.maker.make_button( (50,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
+        b = self.maker.make_button( (50,460), "style_button_menu", self.ops.func_main_menu, func_vars=None)
         self.map.objects_pick_weapon["func_main_menu"] = b
 
         r = self.maker.make_reader( self.text_pl1, (94, 58), 600, "style_reader1")
@@ -129,29 +129,29 @@ class PickWeapon( util.ModuleBasic ):
 
 
 
-        b = self.maker.make_button( (186,170), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, True)
+        b = self.maker.make_button( (186,170), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, rescale=True)
         self._objects_pick_weapon1["weapon_choice1"] = b
-        b = self.maker.make_button( (331,176), "style_button_paper", self._func_submit_weapon, {"weapon":"paper"}, True)
+        b = self.maker.make_button( (331,176), "style_button_paper", self._func_submit_weapon, {"weapon":"paper"}, rescale=True)
         self._objects_pick_weapon1["weapon_choice2"] = b
-        b = self.maker.make_button( (490,170), "style_button_scissors", self._func_submit_weapon, {"weapon":"scissors"}, True)
+        b = self.maker.make_button( (490,170), "style_button_scissors", self._func_submit_weapon, {"weapon":"scissors"}, rescale=True)
         self._objects_pick_weapon1["weapon_choice3"] = b
 
         b = self.maker.make_button( (696,173), "style_button_confirm", self._func_change_active_player, func_vars={"change_to_player":2}, rescale=True)
         self._objects_pick_weapon1["next_pl"] = b
 
 
-        b = self.maker.make_button( (186,294), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, True)
+        b = self.maker.make_button( (186,294), "style_button_rock", self._func_submit_weapon, {"weapon":"rock"}, rescale=True)
         self._objects_pick_weapon2["weapon_choice1"] = b
-        b = self.maker.make_button( (331,294), "style_button_paper", self._func_submit_weapon, {"weapon":"paper"}, True)
+        b = self.maker.make_button( (331,294), "style_button_paper", self._func_submit_weapon, {"weapon":"paper"}, rescale=True)
         self._objects_pick_weapon2["weapon_choice2"] = b
-        b = self.maker.make_button( (490,294), "style_button_scissors", self._func_submit_weapon, {"weapon":"scissors"}, True)
+        b = self.maker.make_button( (490,294), "style_button_scissors", self._func_submit_weapon, {"weapon":"scissors"}, rescale=True)
         self._objects_pick_weapon2["weapon_choice3"] = b
 
-        b = self.maker.make_button( (694,297), "style_button_confirm", self._func_change_active_player, func_vars={"change_to_player":False}, rescale=True)
+        b = self.maker.make_button( (694,297), "style_button_confirm", self._func_change_active_player, func_vars={"change_to_player":False}, rescale=True )
         self._objects_pick_weapon2["next_pl"] = b
 
         # transfer choice of weapon back to player1
-        b = self.maker.make_button( (600,460), "style_button_restart", self._func_change_active_player, func_vars={"change_to_player":1}, rescale=True)
+        b = self.maker.make_button( (600,460), "style_button_restart", self._func_change_active_player, func_vars={"change_to_player":1} )
         self._objects_pick_weapon2["func_restart_round"] = b
 
 
@@ -164,7 +164,7 @@ class PickWeapon( util.ModuleBasic ):
         """
 
         # create toys/things for the space
-        b = self.maker.make_button( (80,80), "style_button_game", self.ops.func_pick_weapon, func_vars={"pl_name1":"James Brown", "pl_name2":"pl2_Very Long Name For Laughter"}, rescale=True)
+        b = self.maker.make_button( (80,80), "style_button_game", self.ops.func_pick_weapon, func_vars={"pl_name1":"James Brown", "pl_name2":"pl2_Very Long Name For Laughter"} )
         self.map.objects_menu["func_game"] = b
 
 

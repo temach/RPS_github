@@ -61,7 +61,7 @@ class Info( util.ModuleBasic ):
         self.reader = r     # simply a local handle to the reader (shortcut)
 
 
-        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
+        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None )
         self.map.objects_info["main_menu"] = b
 
 

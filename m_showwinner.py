@@ -114,16 +114,14 @@ class ShowWinner( util.ModuleBasic ):
         self.reader = r     # simply a local handle to the reader (shortcut)
 
 
-        rect = pygame.Rect( (40,460), (100,64))
-        img = "menu"
-        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
+        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None )
         self.map.objects_show_winner["main_menu"] = b
 
         # the "func_vars" for this button has to be an empty dict, see "func_pick_weapon" in "m_pickweapon.py"
-        b = self.maker.make_button( (656,474), "style_button_next", self.ops.func_pick_weapon, func_vars={}, rescale=True)
+        b = self.maker.make_button( (656,474), "style_button_next", self.ops.func_pick_weapon, func_vars={} )
         self.map.objects_show_winner["next"] = b
 
-        b = self.maker.make_button( (560,309), "style_button_scores", self.ops.func_view_scores, func_vars={"view_from":"display_winner"}, rescale=True)
+        b = self.maker.make_button( (560,309), "style_button_scores", self.ops.func_view_scores, func_vars={"view_from":"display_winner"} )
         self.map.objects_show_winner["view_scores"] = b
 
 

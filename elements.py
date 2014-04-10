@@ -360,7 +360,8 @@ class Form(  ElementBase, pygame.Rect ):
         self.id = id(self)
 
         self.FONT = pygame.font.Font( pygame.font.match_font('mono', 1), style.get("fontsize", None) )
-        self.BG = style.get("bgcolor", None)
+        self.BG_ON, self.BG_OFF = style.get("bgimgs", (None, None) )
+        self.BGCOLOR = style.get("bgcolor", False)
         self.FGCOLOR = style.get("fgcolor", None)
         self.HLCOLOR = style.get("hlcolor", None)
         self.CURSCOLOR = style.get("curscolor", None)
@@ -432,8 +433,14 @@ class Form(  ElementBase, pygame.Rect ):
     def screen(self):
         clip = self._src.get_clip()
         self._src.set_clip(self.clip(clip))
-        try: self._src.fill(self.BG,self)
-        except: self._src.blit(self.BG,self)
+
+        print self.BG_ON
+        if (self.BG_ON and self.BG_OFF):
+            print "b"*40
+            self._src.blit(self.BG_OFF, self)
+        else:
+            print "drawing"
+            self._src.fill(self.BGCOLOR, self)
 
         start = (self.top - self._y) / self._h
         end = (self.bottom - self._y) / self._h + 1

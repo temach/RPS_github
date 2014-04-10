@@ -34,7 +34,13 @@ class StyleLoader( object ):
         all_imgs = ( resources.get_image( img_name + extra ) for extra in img_types )
 
         # if size if False, return unmodified imgs, else return a generator of modified imgs.
-        return all_imgs if (not size) else ( pygame.transform.smoothscale(surf, size) for surf in all_imgs )
+        return all_imgs #if (not size) else ( pygame.transform.smoothscale(surf, size) for surf in all_imgs )
+
+
+    def get_form_surfaces( self, img_name ):
+        img_types = ("_off.png", "_on.png" )
+        all_imgs = ( resources.get_image( img_name + extra ) for extra in img_types )
+        return all_imgs
 
 
     def get_img(self, img_name, size=False):
@@ -48,38 +54,19 @@ class StyleLoader( object ):
 class MakerBasic( StyleLoader ):
 
 
-    '''
-    def get_surfaces(self, path, rect=False):
-        img_types = ("_out.png", "_over.png", "_down.png")
-        all_imgs = ( pygame.image.load( path + extra ).convert()  for extra in img_types )
-
-        if rect:
-            all_imgs = ( pygame.transform.smoothscale(surf, rect.size) for surf in all_imgs )
-
-        return all_imgs
-
-    def make_button(self, rect, func_to_call, img_name, func_vars=None, rescale=False):
-        img_reference = os.path.join( "img", img_name)
-
-        surf_list = (rescale and self.get_surfaces( img_reference, rect)) or self.get_surfaces( img_reference )
-        # Above trick: google for "python and/or trick to select values inline"
-
-        b = Button( surf_list, rect, func_to_call, func_vars)
-        return b
-    '''
-
     def make_button(self, pos, style_name, func_to_call, func_vars=None, rescale=True):
         assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called " + str(style_name) + " . Check your spelling."
         assert type( pos )==tuple, "Variable 'pos' has strange type. Should be a tuple of (x,y)."
         assert (type( func_vars )==dict) or (func_vars is None), "Variable 'func_vars' has strange type. Should be a dictionary."
-        print "make_button() ", self.__module__, self
 
         style_dict = getattr( styles, style_name )
 
-        surf_list = self.get_button_surfaces( style_dict["img"], style_dict["size"] )
+        surf_list = self.get_button_surfaces( style_dict["img"], style_dict["size"] ) if rescale else self.get_button_surfaces( style_dict["img"] )
         rect = pygame.Rect( pos, style_dict["size"] )
 
         b = Button( surf_list, rect, func_to_call, func_vars)
+
+        print "make_button() ", self.__module__, self
         return b
 
 
@@ -95,17 +82,21 @@ class MakerBasic( StyleLoader ):
         return t
 
 
-    def make_form(self, pos, width, style_name):
+    def make_form(self, pos, style_name):
         """ Creates a form, but remember that a form's input can not be grabbed without a form confirmation button"""
 
         style_dict = getattr( styles, style_name, False ) or {}
-        f = Form( pos, width, style_dict)
+        try:
+            style_dict["bgimgs"] = self.get_form_surfaces( style_dict["img"] )
+        except KeyError:
+            style_dict["bgimgs"] = (None, None)
+        f = Form( pos, style_dict["width"], style_dict)
         return f
 
 
 
     def make_form_prompter(self, some_form, rect, func_to_call, img_name="confirm", rescale=False):
-        surf_list = self.get_button_surfaces( img_name, rect.size ) if rescale else self.get_surfaces( img_name )
+        surf_list = self.get_button_surfaces( img_name ) #if (not rescale) else self.get_button_surfaces( img_name, rect.size )
 
         fm = FormPrompter( surf_list, rect, func_to_call, {"user_input":""}, some_form )    # the "some_form" here referes to any Form that would be used to grab the user's input
         return fm

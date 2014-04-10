@@ -3,11 +3,11 @@
 
 import os.path
 import pygame
-import pygame.locals as PL
+#import pygame.locals as PL
 
 import util
 from elements import ElementBase
-
+import resources
 
 
 

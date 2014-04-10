@@ -19,6 +19,7 @@ class MakerLocal( util.MakerBasic ):
     #    super( MakerLocal, self ).__init__()
 
 
+
 class PickName( util.ModuleBasic ):
     text_pl1 = """
                     Hello, welcome,
@@ -136,7 +137,7 @@ class PickName( util.ModuleBasic ):
 
 
         # things that exist within the space
-        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None, rescale=True)
+        b = self.maker.make_button( (40,460), "style_button_menu", self.ops.func_main_menu, func_vars=None )
         self.map.objects_pick_name["func_main_menu"] = b
 
         text = ""
@@ -145,19 +146,19 @@ class PickName( util.ModuleBasic ):
         self.reader = r     # simply a local handle to the reader (shortcut)
 
 
-        f1 = self.maker.make_form( (185, 209), 300, "style_form2" )
+        f1 = self.maker.make_form( (100, 209), "style_form3" )
         self._objects_pick_name1["form1"] = f1
 
         fp1_rect = pygame.Rect( (567, 212), (46,46) )
-        fp1 = self.maker.make_form_prompter( f1, fp1_rect, self._func_submit_name, rescale=True )
+        fp1 = self.maker.make_form_prompter( f1, fp1_rect, self._func_submit_name )
         self._objects_pick_name1["form_prompter1"] = fp1
 
 
-        f2 = self.maker.make_form( (222, 309), 300, "style_form2" )
+        f2 = self.maker.make_form( (222, 309), "style_form3" )
         self._objects_pick_name2["form2"] = f2
 
         fp2_rect = pygame.Rect( (701, 312), (46,46) )
-        fp2 = self.maker.make_form_prompter( f2, fp2_rect, self._func_submit_name, rescale=True )
+        fp2 = self.maker.make_form_prompter( f2, fp2_rect, self._func_submit_name )
         self._objects_pick_name2["form_prompter2"] = fp2
 
 
@@ -173,7 +174,7 @@ class PickName( util.ModuleBasic ):
 
 
         # create toys/things for the space
-        b = self.maker.make_button( (80,50), "style_button_game", self.ops.func_game, func_vars=None, rescale=True)
+        b = self.maker.make_button( (80,50), "style_button_game", self.ops.func_game, func_vars=None )
         self.map.objects_menu["func_game"] = b
 
 
