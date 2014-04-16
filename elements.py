@@ -350,34 +350,47 @@ class Reader( ElementBase, pygame.Rect ):
 
 
 
-
-
-
 class Form(  ElementBase, pygame.Rect ):
+    TAB = 4         # "\t" is equivalent to 4 spaces
 
 
-    def __init__(self, pos, width, style):
+    def __init__(self, pos, style):
+        # style = {"fontsize":integer, "size":(width, height), "maxlines":integer, "bgimgs":(Surface1, Surface2), "fgcolor":(RGB), "hlcolor":(RGB), "curscolor":(RGB), "pad_field_r":integer, "field_height":integer, "pad_txt_r":integer, "pad_txt_l":integer}
+
         self.id = id(self)
 
-        self.FONT = pygame.font.Font( pygame.font.match_font('mono', 1), style.get("fontsize", None) )
-        self.BG_ON, self.BG_OFF = style.get("bgimgs", (None, None) )
-        self.BGCOLOR = style.get("bgcolor", False)
-        self.FGCOLOR = style.get("fgcolor", None)
-        self.HLCOLOR = style.get("hlcolor", None)
-        self.CURSCOLOR = style.get("curscolor", None)
-        self._line = 0
-        self._index = 0
-        self.MAXLINES = style.get("maxlines", None)
-        self._splitted = [""]
+        self.FONT = pygame.font.Font( pygame.font.match_font("mono", 1), style.get("fontsize", 25) )
+        _rect_h = style.get("field_height", self.FONT.get_height() )
 
-        _rect_h = style.get("height", False) or self.FONT.get_height()
-        pygame.Rect.__init__(self, pos, (width, _rect_h) )
+        # overall area (draw background)
+        self.overall_rect = pygame.Rect( pos, style["size"] )
+
+        # area to view (display text)
+        self.text_draw_rect = pygame.Rect(0,0,0,0)
+        self.text_draw_rect.left = pos[0] + style.get("pad_txt_r", 13)
+        self.text_draw_rect.top = pos[1] + (style["size"][1] - _rect_h)/2.0
+        self.text_draw_rect.width = style["size"][0] - style.get("pad_txt_l", 24)
+        self.text_draw_rect.height = _rect_h
+
+        # area to type (enter text). This is the "self".
+        _text_enter_rect = self.text_draw_rect.move( style.get("pad_field_r", 14), 0 ).clip( self.text_draw_rect )
+
+        pygame.Rect.__init__(self, _text_enter_rect[:])
         ElementBase.__init__(self)
 
-        self._x,self._y = pos
+        self._line = 0
+        self._index = 0
+        self._splitted = [""]
+        self.MAXLINES = style.get("maxlines", 1)
+
+        self.BGOUT, self.BGOVER = style.get("bgimgs", (None, None) )    # BackGround images
+        self.FGCOLOR = style.get("fgcolor", (0,0,0))
+        self.HLCOLOR = style.get("hlcolor", (50,50,0))
+        self.CURSCOLOR = style.get("curscolor", (200,0,0))
+
+        self._x, self._y = pos
         self._src = pygame.display.get_surface()
-        self._select = self._line,self._index
-        self.TAB = 4            # TODO: make it class defined, (here it is instance defined)
+        self._select = ( self._line, self._index )
         self._adjust()
         self._cursor = True
 
@@ -394,7 +407,7 @@ class Form(  ElementBase, pygame.Rect ):
         return None
     @HLCOLOR.setter
     def HLCOLOR(self,color):
-        self._hlsurface = pygame.Surface((self._w,self._h),pygame.SRCALPHA)
+        self._hlsurface = pygame.Surface( (self._w, self._h), pygame.SRCALPHA )
         self._hlsurface.fill(color)
 
     @property
@@ -410,7 +423,7 @@ class Form(  ElementBase, pygame.Rect ):
     @FONT.setter
     def FONT(self,font):
         self._font = font
-        self._w,self._h = self._font.size(' ')
+        self._w, self._h = self._font.size(' ')
 
     @property
     def SELECTION(self):
@@ -430,59 +443,58 @@ class Form(  ElementBase, pygame.Rect ):
         self._x += self._rcursor.x - rcurs.x
         self._y += self._rcursor.y - rcurs.y
 
-    def screen(self):
-        clip = self._src.get_clip()
-        self._src.set_clip(self.clip(clip))
-
-        print self.BG_ON
-        if (self.BG_ON and self.BG_OFF):
-            print "b"*40
-            self._src.blit(self.BG_OFF, self)
-        else:
-            print "drawing"
-            self._src.fill(self.BGCOLOR, self)
-
-        start = (self.top - self._y) / self._h
-        end = (self.bottom - self._y) / self._h + 1
-
-        p1,p2 = sorted(((self._line,self._index),self._select))
-
-        y = self._y + start * self._h
-        for py,i in enumerate(self._splitted[start:end],start):
-            x = self._x
-            for px,j in enumerate(i):
-                if p1<=(py,px)<p2:
-                    self._src.blit(self._hlsurface,(x,y))
-                    self._src.blit(self._font.render(j,1,self.FGCOLOR),(x,y))
-                else:
-                    self._src.blit(self._font.render(j,1,self.FGCOLOR),(x,y))
-                x += self._w
-            y += self._h
-        if self._cursor:
-            pygame.draw.line(self._src,self.CURSCOLOR,self._rcursor.topleft,self._rcursor.bottomleft,1)
-        self._src.set_clip(clip)
-
-
     def run(self):
         return
 
     def render(self, screen):
-        self.screen()
-        pygame.display.update(self)
-        return self
+        # debug
+        #pygame.draw.rect( self._src, (200,0,0), self.overall_rect, 2 )          # red = overall
+        #pygame.draw.rect( self._src, (0,200,0), self.text_draw_rect.inflate(0,20), 5 )         # green = area which you see
+        #pygame.draw.rect( self._src, (0,0,200), self.inflate(0,30), 2 )                       # blue = are in which you type
+        self._src.blit( self.BGOVER, self.overall_rect )
+
+        start = ( self.top - self._y ) / self._h
+        end = ( self.bottom - self._y ) / self._h + 1
+
+        p1,p2 = sorted( ((self._line, self._index), self._select) )
+
+        original_clip = self._src.get_clip()
+        self._src.set_clip( self.text_draw_rect.clip( original_clip ) )
+
+        y = self._y + start * self._h
+        for py, i in enumerate( self._splitted[start:end], start ):
+            x = self._x
+            for px, j in enumerate(i):
+                if p1 <= (py,px) < p2:
+                    self._src.blit( self._hlsurface, (x, y) )
+                    self._src.blit( self._font.render(j, 1, self.FGCOLOR), (x, y) )
+                else:
+                    self._src.blit( self._font.render(j, 1, self.FGCOLOR), (x, y) )
+                x += self._w
+            y += self._h
+
+        if self._cursor:
+            pygame.draw.line(self._src, self.CURSCOLOR, self._rcursor.topleft, self._rcursor.bottomleft, 1)
+
+        self._src.set_clip( original_clip )
+
+        #r = self.overall_rect.copy().inflate( (50,50) )
+        #pygame.draw.rect( self._src, (0,0,0), r, 2)
+        return self.overall_rect            # type = pygame.Rect()
+
+
 
     def receive_event(self,ev):
-
-        line,index = self._line,self._index
+        line, index = self._line,self._index
         shift = pygame.key.get_pressed()
-        shift = shift[pygame.K_RSHIFT]|shift[pygame.K_LSHIFT]
+        shift = shift[pygame.K_RSHIFT] or shift[pygame.K_LSHIFT]
 
         def clear():
-            p1,p2 = sorted(((self._line,self._index),self._select))
+            p1, p2 = sorted(((self._line,self._index),self._select))
             if p1 != p2:
                 selection = [len(i) for i in self._splitted[:p2[0]]]
                 self.OUTPUT = self.OUTPUT[:sum(selection[:p1[0]]) + p1[0] + p1[1]] + self.OUTPUT[sum(selection[:p2[0]]) + p2[0] + p2[1]:]
-                self._select = self._line,self._index = p1
+                self._select = self._line, self._index = p1
 
         if ev.type == pygame.KEYDOWN:
             if ev.key == pygame.K_RIGHT:
@@ -491,7 +503,8 @@ class Form(  ElementBase, pygame.Rect ):
                 elif self._line < len(self._splitted)-1:
                     self._index = 0
                     self._line += 1
-                if not pygame.mouse.get_pressed()[0] and not shift: self._select = self._line,self._index
+                if not pygame.mouse.get_pressed()[0] and not shift:
+                    self._select = self._line,self._index
 
             elif ev.key == pygame.K_LEFT:
                 if self._index > len(self._splitted[self._line]):
@@ -501,15 +514,18 @@ class Form(  ElementBase, pygame.Rect ):
                 elif self._line:
                     self._line -= 1
                     self._index = len(self._splitted[self._line])
-                if not pygame.mouse.get_pressed()[0] and not shift: self._select = self._line,self._index
+                if not pygame.mouse.get_pressed()[0] and not shift:
+                    self._select = self._line, self._index
 
             elif ev.key == pygame.K_UP:
                 if self._line: self._line -= 1
-                if not pygame.mouse.get_pressed()[0] and not shift: self._select = self._line,self._index
+                if not pygame.mouse.get_pressed()[0] and not shift:
+                    self._select = self._line, self._index
 
             elif ev.key == pygame.K_DOWN:
                 if self._line < len(self._splitted)-1: self._line += 1
-                if not pygame.mouse.get_pressed()[0] and not shift: self._select = self._line,self._index
+                if not pygame.mouse.get_pressed()[0] and not shift:
+                    self._select = self._line, self._index
 
             elif ev.key == pygame.K_DELETE:
                 if self._select == (self._line,self._index):
@@ -517,28 +533,33 @@ class Form(  ElementBase, pygame.Rect ):
                         self._index = len(self._splitted[self._line])
                         self._select = self._line + 1,0
                     else:
-                        self._select = self._line,self._index + 1
+                        self._select = self._line, self._index + 1
                 clear()
 
             elif ev.key == pygame.K_END:
                 self._index = len(self._splitted[self._line])
-                if not pygame.mouse.get_pressed()[0] and not shift: self._select = self._line,self._index
+                if not pygame.mouse.get_pressed()[0] and not shift:
+                    self._select = self._line, self._index
 
             elif ev.key == pygame.K_HOME:
                 self._index = 0
-                if not pygame.mouse.get_pressed()[0] and not shift and not shift: self._select = self._line,self._index
+                if not pygame.mouse.get_pressed()[0] and not shift:
+                    self._select = self._line, self._index
 
             elif ev.key == pygame.K_BACKSPACE:
                 if self._select == (self._line,self._index):
-                    if self._index > len(self._splitted[self._line]): self._index = len(self._splitted[self._line])
+                    if self._index > len(self._splitted[self._line]):
+                        self._index = len(self._splitted[self._line])
                     if self._index == 0:
-                        if self._line: self._select = self._line - 1,len(self._splitted[self._line - 1])
-                    else: self._select = self._line,self._index - 1
+                        if self._line:
+                            self._select = self._line - 1,len(self._splitted[self._line - 1])
+                    else:
+                        self._select = self._line,self._index - 1
                 clear()
 
             elif ev.key == pygame.K_TAB:
                 clear()
-                sp = self.TAB-self._index%self.TAB
+                sp = self.TAB - (self._index % self.TAB)
                 self._splitted[self._line] = self._splitted[self._line][:self._index] + ' '*sp + self._splitted[self._line][self._index:]
                 self._index += sp
                 self._select = self._line,self._index
@@ -562,11 +583,16 @@ class Form(  ElementBase, pygame.Rect ):
             if ev.button < 3:
                 self._line = (ev.pos[1] - self._y) / self._h
                 self._index = (ev.pos[0] - self._x) / self._w
-                if ((ev.pos[0] - self._x) % self._w) > (self._w / 2): self._index += 1
+
+                if ((ev.pos[0] - self._x) % self._w) > (self._w / 2):
+                    self._index += 1
+
                 if self._line > len(self._splitted)-1:
                     self._line = len(self._splitted)-1
                     self._index = len(self._splitted[self._line])
-                if self._index > len(self._splitted[self._line]): self._index = len(self._splitted[self._line])
+                if self._index > len(self._splitted[self._line]):
+                    self._index = len(self._splitted[self._line])
+
                 if ev.button == 2:
                     self._splitted[self._line] = self._splitted[self._line][:self._index] + self.SELECTION + self._splitted[self._line][self._index:]
                     self.OUTPUT = self.OUTPUT
@@ -576,31 +602,38 @@ class Form(  ElementBase, pygame.Rect ):
 
             elif ev.button == 4:
                 y = self._y
-                if self._y + self._h*3 > self.top: self._y = self.top
-                else: self._y += self._h*3
-                self._rcursor.move_ip(0,self._y-y)
+                if self._y + self._h*3 > self.top:
+                    self._y = self.top
+                else:
+                    self._y += self._h*3
+                self._rcursor.move_ip(0, self._y - y)
                 return
 
             elif ev.button == 5:
                 y = self._y
                 h = len(self._splitted) * self._h
                 if h > self.height:
-                    if self._y - self._h*3 < self.bottom - h: self._y = self.bottom - h
-                    else: self._y -= self._h*3
-                    self._rcursor.move_ip(0,self._y-y)
+                    if self._y - self._h*3 < self.bottom - h:
+                        self._y = self.bottom - h
+                    else:
+                        self._y -= self._h*3
+                    self._rcursor.move_ip(0, self._y - y)
                 return
 
         elif ev.type == pygame.MOUSEMOTION and ev.buttons[0] and self.collidepoint(ev.pos):
             self._line = (ev.pos[1] - self._y) / self._h
             self._index = (ev.pos[0] - self._x) / self._w
-            if ((ev.pos[0] - self._x) % self._w) > (self._w / 2): self._index += 1
+            if ((ev.pos[0] - self._x) % self._w) > (self._w / 2):
+                self._index += 1
             if self._line > len(self._splitted)-1:
                 self._line = len(self._splitted)-1
                 self._index = len(self._splitted[self._line])
-            if self._index > len(self._splitted[self._line]): self._index = len(self._splitted[self._line])
+            if self._index > len(self._splitted[self._line]):
+                self._index = len(self._splitted[self._line])
 
-        if (line,index) != (self._line,self._index):
+        if (line, index) != (self._line, self._index):
             self._adjust()
+
 
 
 
@@ -610,8 +643,6 @@ class FormPrompter( Button ):
         super(FormPrompter, self).__init__(imgs_list, rect, func, func_vars)
 
         self.form = some_form
-        self.form_active = False
-
 
     def receive_event(self, ev):
         super(FormPrompter, self).receive_event( ev )

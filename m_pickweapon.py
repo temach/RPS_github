@@ -83,32 +83,37 @@ class PickWeapon( util.ModuleBasic ):
 
 
     def _func_submit_weapon(self, func_vars=None):
+        if not func_vars["weapon"].strip().isalnum():
+            return
+
         if self.cur_pl==1:
             self.pl1_weapon = func_vars["weapon"]
             print "player1 weapon", self.pl1_weapon
-
         else:     # if cur_pl==2
             self.pl2_weapon = func_vars["weapon"]
             print "player2 weapon", self.pl2_weapon
 
+
     def _func_change_active_player(self, func_vars=None):
         assert func_vars["change_to_player"] in (1, 2, False), "Problem: want to change to some wierd player number. "
-        print "hello!"
-        self.cur_pl = func_vars["change_to_player"]
+        _change = func_vars["change_to_player"]
 
-        if self.cur_pl==1:
+        if _change==1:
+            self.cur_pl = _change
             self.reader.update_text( self.text_pl1 )
             self.pl1_weapon = None
             self.cp.unbind( self._objects_pick_weapon2 )
             self.cp.bind( self._objects_pick_weapon1 )
 
-        elif self.cur_pl==2:
+        elif _change==2 and self.pl1_weapon:
+            self.cur_pl = _change
             self.reader.update_text( self.text_pl2 )
             self.pl2_weapon = None
             self.cp.unbind( self._objects_pick_weapon1 )
             self.cp.bind( self._objects_pick_weapon2 )
 
-        elif self.cur_pl is False:    # both pl1 and pl2 have chosen weapons, now its time to resolve battle and show winner.
+        elif _change is False and self.pl2_weapon:    # both pl1 and pl2 have chosen weapons, now its time to resolve battle and show winner.
+            self.cur_pl = _change
             self.ops.func_show_winner( {    "pl_name1":self.pl_name1, "pl_name2":self.pl_name2,
                                             "pl1_weapon":self.pl1_weapon, "pl2_weapon":self.pl2_weapon,} )
 

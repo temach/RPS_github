@@ -170,7 +170,7 @@ def set_images_path(path):
     exist, otherwise it returns True.
     """
     if not os.access(path, os.F_OK):
-        raise IOError, path + " not found."
+        raise IOError( path + " not found." )
     if path.endswith(os.sep):
         path = path[:-1]
     global __images_path

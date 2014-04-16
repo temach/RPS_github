@@ -53,9 +53,8 @@ style_button_confirm = dict(
 
 
 style_form1 = dict(                 # tiny single line input
-    width = 300,
+    size = (300, 20),
     fontsize = 12,
-    height = 20,
     font = "mono",
     bgcolor = (100,100,100),
     fgcolor = (250,250,250),       # text color
@@ -65,9 +64,8 @@ style_form1 = dict(                 # tiny single line input
 )
 
 style_form2 = dict(             # large single line input
-    width = 300,
+    size = (300, 30),
     fontsize = 25,
-    height = 30,
     font = "mono",
     bgcolor = (100,100,100),
     fgcolor = (250,250,250),       # text color
@@ -77,13 +75,12 @@ style_form2 = dict(             # large single line input
 )
 
 style_form3 = dict(             # large single line input
-    img = "prompt",           # instead of bgcolor=( RGB tuple )
-    width = 300,
+    bgimg = "prompt",           # instead of bgcolor=( RGB tuple )
+    size = (348, 54),
     fontsize = 25,
-    height = 70,
     font = "mono",
     fgcolor = (20,20,20),          # text color
-    hlcolor = (250,190,150,50),    # highlighted text color
+    hlcolor = (130,70,30,80),    # highlighted text color
     curscolor = (190,0,10),
     maxlines = 1,                  # wrap lines automatically
 )

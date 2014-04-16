@@ -14,9 +14,6 @@ import small_util
 
 class MakerLocal( util.MakerBasic ):
     pass
-    #def __init__(self):
-    #    super( MakerLocal, self ).change_menu_imgs()
-    #    super( MakerLocal, self ).__init__()
 
 
 
@@ -33,13 +30,6 @@ class PickName( util.ModuleBasic ):
                          to
                        choose!
 """
-
-
-
-
-
-
-
 
     def __init__(self, control_panel, operators, mapper):
         self.cp = control_panel
@@ -63,6 +53,7 @@ class PickName( util.ModuleBasic ):
                     Hello, welcome,
     You are player1, can you choose your name now?
          Make sure not to make typing errors
+            And use sensible characters!
 """
 
         self.text_pl2 = """
@@ -76,24 +67,20 @@ class PickName( util.ModuleBasic ):
     """ Modify default function behaviour """
     # What are some of the things that will happen (in terms of this class) when Someone calls "func_mein_menu"
     def func_menu(self, func_vars=None):
-        #start debug
-        #self.cp.bind( self.map.objects_menu )
-        #db end
-        self.cur_pl=1
+        self.cur_pl = 1
         self.cp.unbind( self.map.objects_pick_name )
         self.cp.unbind( self._objects_pick_name1 )
         self.cp.unbind( self._objects_pick_name2 )
 
     def func_game(self, func_vars=None):
-        #start debug
-        #self.cp.unbind( self.map.objects_menu )
-        #db end
+        self.cur_pl = 1
         self.reader.update_text( self.text_pl1 )
         self.cp.bind( self.map.objects_pick_name )
         self.cp.bind( self._objects_pick_name1 )    # this is local, watch for "_" in name start
 
 
     def func_pick_weapon(self, func_vars=None):
+        self.cur_pl = 1
         self.cp.unbind( self.map.objects_pick_name )
         self.cp.unbind( self._objects_pick_name1 )
         self.cp.unbind( self._objects_pick_name2 )
@@ -122,8 +109,6 @@ class PickName( util.ModuleBasic ):
 
     def _check_name( self, name_str ):
         return ( name_str.isalnum() and len(name_str)<15 )
-
-
 
 
 
@@ -171,7 +156,6 @@ class PickName( util.ModuleBasic ):
         surround this module, but are also implemented elsewhere. Call this function
         when you want to test one module in isolation.
         """
-
 
         # create toys/things for the space
         b = self.maker.make_button( (80,50), "style_button_game", self.ops.func_game, func_vars=None )

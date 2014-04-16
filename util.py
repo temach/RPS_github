@@ -34,27 +34,34 @@ class StyleLoader( object ):
         all_imgs = ( resources.get_image( img_name + extra ) for extra in img_types )
 
         # if size if False, return unmodified imgs, else return a generator of modified imgs.
-        return all_imgs #if (not size) else ( pygame.transform.smoothscale(surf, size) for surf in all_imgs )
+        return all_imgs if (not size) else ( pygame.transform.smoothscale(surf, size) for surf in all_imgs )
 
 
-    def get_form_surfaces( self, img_name ):
-        img_types = ("_off.png", "_on.png" )
-        all_imgs = ( resources.get_image( img_name + extra ) for extra in img_types )
-        return all_imgs
+    def get_form_surfaces( self, info, size=False ):
+        if type(info)==tuple:
+            h1 = max( 0, r-50), max(0, g-50), max(0, b-50)
+            h2 = r, g, b
+            hues = ( h1, h2 )
+            all_imgs = ( pygame.Surface(size), pygame.Surface(size) )
+
+        else:
+            img_types = ("_off.png", "_on.png" )
+            all_imgs = ( pygame.transform.smoothscale( resources.get_image( info + extra ), size ) for extra in img_types )
+
+        return all_imgs     # all_imgs must be of length 2. (so two items)
+
 
 
     def get_img(self, img_name, size=False):
         surf = resources.get_image( img_name )
         return surf if (not size) else pygame.transform.smoothscale(surf, size)
 
-    def change_menu_imgs(self):
-        resources.get_image("menu_over.png", True)
 
 
 class MakerBasic( StyleLoader ):
 
 
-    def make_button(self, pos, style_name, func_to_call, func_vars=None, rescale=True):
+    def make_button(self, pos, style_name, func_to_call, func_vars=None, rescale=False):
         assert getattr( styles, style_name, False ), "Module 'style.py' has no style dictionary called " + str(style_name) + " . Check your spelling."
         assert type( pos )==tuple, "Variable 'pos' has strange type. Should be a tuple of (x,y)."
         assert (type( func_vars )==dict) or (func_vars is None), "Variable 'func_vars' has strange type. Should be a dictionary."
@@ -68,6 +75,7 @@ class MakerBasic( StyleLoader ):
 
         print "make_button() ", self.__module__, self
         return b
+
 
 
     def make_reader(self, text, pos, width, style_name):
@@ -84,13 +92,11 @@ class MakerBasic( StyleLoader ):
 
     def make_form(self, pos, style_name):
         """ Creates a form, but remember that a form's input can not be grabbed without a form confirmation button"""
+        style_dict = getattr( styles, style_name )
 
-        style_dict = getattr( styles, style_name, False ) or {}
-        try:
-            style_dict["bgimgs"] = self.get_form_surfaces( style_dict["img"] )
-        except KeyError:
-            style_dict["bgimgs"] = (None, None)
-        f = Form( pos, style_dict["width"], style_dict)
+        style_dict["bgimgs"] = self.get_form_surfaces( style_dict["bgimg"], style_dict["size"] )
+
+        f = Form( pos, style_dict)
         return f
 
 
@@ -198,6 +204,24 @@ class ActiveGroup( pygame.sprite.RenderUpdates ):
 
 
 """
+
+
+# style_dict["bg_imgs"] = self.get_form_surfaces( style_dict["bgimg"], style_dict["size"] )
+#try:
+#    style_dict["bg_imgs"] = self.get_form_surfaces( style_dict["bgimg"], style_dict["size"] )
+#except KeyError:
+#    style_dict["bg_imgs"] = self.get_form_surfaces( style_dict["bgcolor"], style_dict["size"] )
+
+
+
+
+
+
+
+
+
+
+
 
     def make_form(self, pos, width, **kws):
         #Creates a form, but remember that a form's input can not be grabbed without a form confirmation button
