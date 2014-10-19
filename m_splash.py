@@ -168,7 +168,6 @@ class SplashModule( util.ModuleBasic ):
         pygame.mixer.music.load( self.music_path )
         pygame.mixer.music.play()
 
-        # Slowly fade the splash screen image from white to opaque.
         splash = pygame.image.load( self.image_path ).convert()
         splash = pygame.transform.smoothscale( splash, (800,600) )
 

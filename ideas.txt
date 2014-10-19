@@ -1,1 +1,24 @@
 creation parameters for buttons should be key word arguments. There will be an overall styles.py file for system wide settings. There will be an ability to set style elements of each object.
+
+
+
+
+
+
+This is how the sprites will work in the rps0.3
+
+Group thing calls render() on sprite.
+Sprite return a tuple of rects that need to be updated.
+That is all. It is up to the sprite to figure out if it is dirty of not.
+
+There will be some logic in the Group to process the contents of the returned tuple. 
+So:
+If it is empty, ==> the sprite is not dirty, so we don't need to update/touch/do anything.
+If it is length one or more ==> we add the rects to the list of things to be updated.
+
+
+
+Question. with sprites that only have one image, maybe it is better to allow them to return juts one object instead of a tuple with one object inside? 
+What would be faster, to throw around tuples from every single object, OR to put some logic so that you only throw tuples when you need them. (Which is kind of rare) And in al other times you only throw a pointer.
+
+Solution: Start by throwing tuples around. Record speed. Make a copy with more logic. Record speed. Compare.

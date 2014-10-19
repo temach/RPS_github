@@ -1,6 +1,7 @@
+#! /usr/bin/env python-32
 import pygame
 import os
-import pygame.image, pygame.font, pygame.mixer # remove for pygame &gt;=1.4
+#import pygame.image, pygame.font, pygame.mixer # remove for pygame &gt;=1.4
 
 
 """
@@ -25,7 +26,6 @@ otherwise, you'll get a ValueError.
 
 
 """
-
 
 
 __images = {}

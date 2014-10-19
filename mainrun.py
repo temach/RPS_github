@@ -6,6 +6,15 @@
 Resolve Clash of Titans
 """
 
+'''
+#make sure we're in the correct directory
+fullpath = os.path.abspath(sys.argv[0])
+dir = os.path.split(fullpath)[0]
+os.chdir(dir)
+
+#add our code to the python path
+sys.path.insert(0, 'code')
+'''
 
 import pygame
 import pygame.locals as PL

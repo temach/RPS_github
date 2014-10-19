@@ -372,7 +372,7 @@ class Form(  ElementBase, pygame.Rect ):
         self.text_draw_rect.width = style["size"][0] - style.get("pad_txt_l", 24)
         self.text_draw_rect.height = _rect_h
 
-        # area to type (enter text). This is the "self".
+        # area to type ( to enter text). This is the "self".
         _text_enter_rect = self.text_draw_rect.move( style.get("pad_field_r", 14), 0 ).clip( self.text_draw_rect )
 
         pygame.Rect.__init__(self, _text_enter_rect[:])
@@ -478,13 +478,14 @@ class Form(  ElementBase, pygame.Rect ):
 
         self._src.set_clip( original_clip )
 
+        # debug
         #r = self.overall_rect.copy().inflate( (50,50) )
         #pygame.draw.rect( self._src, (0,0,0), r, 2)
         return self.overall_rect            # type = pygame.Rect()
 
 
 
-    def receive_event(self,ev):
+    def receive_event(self, ev):
         line, index = self._line,self._index
         shift = pygame.key.get_pressed()
         shift = shift[pygame.K_RSHIFT] or shift[pygame.K_LSHIFT]
